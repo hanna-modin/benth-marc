@@ -1,0 +1,68 @@
+# Data files
+*.csv
+*.txt
+*.parquet
+*.xlsx
+*.xls
+
+# Other 
+*.pdf
+*.docx
+*.html
+
+# Geospatial data files
+*.tif
+*.tiff
+*.wkt
+*.qgz
+*.aux.xml
+*.shx
+*.shp
+*.prj
+*.dbf
+*.cpg
+
+# Large image files
+*.png
+*.jpg
+*.jpeg
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# R
+.Rhistory
+.RData
+.Rproj.user
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Git
+.git/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Data directories with large files
+GBIF/occ_parquet_shards_*/
+GBIF/eurasia_data/
+GBIF/US_data/
+GEBCO/*.tif
+GEBCO/*.tiff
+
+# Keep these files (negation - add specific files you DO want to track)
+# Uncomment and modify as needed:
+# !important_file.csv
+
+# Do not ignore these files: 
+!excluded_taxa_with_ranks_manual.xlsx
+!taxa_need_filtering.xlsx
+!eurasia.wkt
+!US.wkt
