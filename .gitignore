@@ -66,3 +66,6 @@ GEBCO/*.tiff
 !taxa_need_filtering.xlsx
 !eurasia.wkt
 !US.wkt
+!merged_dataset_with_keep_column.csv
+!P_gear_edited.csv
+!gbif_taxonkey_original.csv
