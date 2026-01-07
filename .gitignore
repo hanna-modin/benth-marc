@@ -69,3 +69,4 @@ GEBCO/*.tiff
 !merged_dataset_with_keep_column.csv
 !P_gear_edited.csv
 !gbif_taxonkey_original.csv
+!columns_in_final.xlsx
