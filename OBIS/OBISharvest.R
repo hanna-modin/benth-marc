@@ -1,14 +1,15 @@
+# nolint start
 setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\Data paper code\\OBIS")
-#install.packages("lubridate")
+# install.packages("lubridate")
 
 # Load required libraries
-library(robis)      # For downloading data from OBIS
-library(arrow)      # For saving and reading Parquet files
-library(dplyr)      # For data manipulation
-library(lubridate)  # For date parsing and extracting years
+library(robis) # For downloading data from OBIS
+library(arrow) # For saving and reading Parquet files
+library(dplyr) # For data manipulation
+library(lubridate) # For date parsing and extracting years
 
 # Define the AphiaIDs for the phyla you want to download
-aphia_ids <- c(882, 51, 1065, 1806, 1267, 558, 146142, 1821, 1803, 799, 152391, 1276, 793, 1818, 101060, 101063, 101061, 1789)  # Sipuncula is not recognized as phylum according to WoRMS # nolint
+aphia_ids <- c(882, 51, 1065, 1806, 1267, 558, 146142, 1821, 1803, 799, 152391, 1276, 793, 1818, 101060, 101063, 101061, 1789) # Sipuncula is not recognized as phylum according to WoRMS # nolint
 
 # Define a WKT string for the geographic area (example: a bounding box)
 US_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 90, -14 90, -16 90, -18 90, -20 90, -22 90, -24 90, -26 90, -28 90,
@@ -68,43 +69,12 @@ eurasia_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1
 84 90, 82 90, 80 90, 78 90, 76 90, 74 90, 72 90, 70 90, 68 90, 66 90, 64 90, 62 90, 60 90, 58 90, 56 90, 54 90, 52 90, 50 90, 48 90, 46 90, 44 90, 42 90,
 40 90, 38 90, 36 90, 34 90, 32 90, 30 90, 28 90, 26 90, 24 90, 22 90, 20 90, 18 90, 16 90, 14 90, 12 90, 10 90, 8 90, 6 90, 4 90, 2 90, 0 90, 0 61.994641))"
 
-# ---------------------- TEST ---------------------
-
-# Download occurrences for US wkt
-occurrences_US <- occurrence(
-  taxonid = 410749, 
-  geometry = US_wkt,
-  mof = TRUE
-)
-
-cat("US Occurrence data downloaded:", nrow(occurrences_US), "records\n")
-str(occurrences_US)
-
-# Flatten the MoF data 
-mof_US <- unnest_extension(
-  occurrences_US, 
-  'MeasurementOrFact', 
-  fields = c("id", "eventID")
-)
-
-# Save the mof data
-write_parquet(mof_US, "mof_US.parquet")
-
-# Remove nested mof column from occurrences to be able to save as parquet
-occurrences_US_nomof <- occurrences_US %>%
-  select(-mof) # Remove the 'mof' column
-
-#Double check structure
-str(occurrences_US_nomof)
-
-# Save the occurrences data
-write_parquet(occurrences_US_nomof, "occurrences_US.parquet")
 
 # ---------------------- Download US ---------------------
 
 # Download occurrences for US wkt
 occurrences_US <- occurrence(
-  taxonid = aphia_ids, 
+  taxonid = aphia_ids,
   geometry = US_wkt,
   mof = TRUE
 )
@@ -112,10 +82,10 @@ occurrences_US <- occurrence(
 cat("US Occurrence data downloaded:", nrow(occurrences_US), "records\n")
 str(occurrences_US)
 
-# Flatten the MoF data 
+# Flatten the MoF data
 mof_US <- unnest_extension(
-  occurrences_US, 
-  'MeasurementOrFact', 
+  occurrences_US,
+  "MeasurementOrFact",
   fields = c("id", "eventID")
 )
 
@@ -126,7 +96,7 @@ write_parquet(mof_US, "mof_US.parquet")
 occurrences_US_nomof <- occurrences_US %>%
   select(-mof) # Remove the 'mof' column
 
-#Double check structure
+# Double check structure
 str(occurrences_US_nomof)
 
 # Save the occurrences data
@@ -136,7 +106,7 @@ write_parquet(occurrences_US_nomof, "occurrences_US.parquet")
 
 # Download occurrences for Eurasia wkt
 occurrences_eurasia <- occurrence(
-  taxonid = aphia_ids, 
+  taxonid = aphia_ids,
   geometry = eurasia_wkt,
   mof = TRUE
 )
@@ -144,10 +114,10 @@ occurrences_eurasia <- occurrence(
 cat("Eurasia occurrence data downloaded:", nrow(occurrences_eurasia), "records\n")
 str(occurrences_eurasia)
 
-# Flatten the MoF data 
+# Flatten the MoF data
 mof_eurasia <- unnest_extension(
-  occurrences_eurasia, 
-  'MeasurementOrFact', 
+  occurrences_eurasia,
+  "MeasurementOrFact",
   fields = c("id", "eventID")
 )
 
@@ -158,7 +128,7 @@ write_parquet(mof_eurasia, "mof_eurasia.parquet")
 occurrences_eurasia_nomof <- occurrences_eurasia %>%
   select(-mof) # Remove the 'mof' column
 
-#Double check structure
+# Double check structure
 str(occurrences_eurasia_nomof)
 
 # Save the occurrences data
@@ -169,36 +139,46 @@ write_parquet(occurrences_eurasia_nomof, "occurrences_eurasia.parquet")
 # ------------------------- Define taxon filters using aphiaID ------------------------------
 
 
-excluded_classes <- c(1836, 1837, 178701, 1300, 1304, 1305, 1278, 147799, 394515, 1298360, 849233, 877220, 1051, 162563, 843665, 135219, 10193, 20300, 
-                      10196, 798, 1250, 20285, 843662, 135220, 22626, 10189, 843666, 1517380, 293496, 1517379, 1517374, 1069, 104897, 182712, 104019, 
-                      146271, 1083, 19948)  
+excluded_classes <- c(
+  1836, 1837, 178701, 1300, 1304, 1305, 1278, 147799, 394515, 1298360, 849233, 877220, 1051, 162563, 843665, 135219, 10193, 20300,
+  10196, 798, 1250, 20285, 843662, 135220, 22626, 10189, 843666, 1517380, 293496, 1517379, 1517374, 1069, 104897, 182712, 104019,
+  146271, 1083, 19948
+)
 
-excluded_orders <- c(196109, 1490567, 2689, 10305, 10313, 10329, 11014, 10331, 10211, 325345, 325345, 103353, 447, 10304, 17931, 10309, 10326, 16349, 
-                     10295, 177531, 10306, 10297, 154206, 154156, 342486, 10308, 148390, 10316, 1600607, 10294, 160002, 11730, 10322, 1600798, 10327, 
-                     10321, 10919, 10288, 10310, 10320, 767376, 10296, 10314, 10332, 991168, 154219, 397228, 151811, 120239, 154217, 151956, 1600606, 
-                     10323, 10315, 833292, 154157, 22621, 10317, 152241, 833022, 123096, 833089, 154244, 10319, 154571, 1600603, 10318, 484684, 715608, 
-                     10201, 1374984, 1100, 1101, 345938, 22597, 1106, 22598, 22605, 1035042, 1104, 325345, 325345, 1128)
+excluded_orders <- c(
+  196109, 1490567, 2689, 10305, 10313, 10329, 11014, 10331, 10211, 325345, 325345, 103353, 447, 10304, 17931, 10309, 10326, 16349,
+  10295, 177531, 10306, 10297, 154206, 154156, 342486, 10308, 148390, 10316, 1600607, 10294, 160002, 11730, 10322, 1600798, 10327,
+  10321, 10919, 10288, 10310, 10320, 767376, 10296, 10314, 10332, 991168, 154219, 397228, 151811, 120239, 154217, 151956, 1600606,
+  10323, 10315, 833292, 154157, 22621, 10317, 152241, 833022, 123096, 833089, 154244, 10319, 154571, 1600603, 10318, 484684, 715608,
+  10201, 1374984, 1100, 1101, 345938, 22597, 1106, 22598, 22605, 1035042, 1104, 325345, 325345, 1128
+)
 
-excluded_families <- c(101417, 101420, 101418, 101422, 236594, 101415, 196118, 158321, 110671, 154884, 104077, 104079, 104084, 104087, 104092, 128586, 
-                       345271, 5953, 101424, 104103, 104104, 958) 
+excluded_families <- c(
+  101417, 101420, 101418, 101422, 236594, 101415, 196118, 158321, 110671, 154884, 104077, 104079, 104084, 104087, 104092, 128586,
+  345271, 5953, 101424, 104103, 104104, 958, 227115
+)
 
-excluded_genera <- c(129715, 129329, 206129, 129722, 104108, 104111, 117212, 101749, 104137, 458856, 458856, 125815, 125815, 1434994, 117107, 104115, 
-                     104193, 104159, 104116, 104117, 127533, 117216, 101602, 148370, 135361, 122429, 104174, 105399, 110673, 103358, 104121, 117111, 
-                     104183, 104190, 104164, 115341, 103367, 129102, 104201, 196874, 104165, 104126, 105410, 104228, 104229, 104236, 104149, 110679, 
-                     128691, 104204, 458856, 125815)
+excluded_genera <- c(
+  129715, 129329, 206129, 129722, 104108, 104111, 117212, 101749, 104137, 458856, 458856, 125815, 125815, 1434994, 117107, 104115,
+  104193, 104159, 104116, 104117, 127533, 117216, 101602, 148370, 135361, 122429, 104174, 105399, 110673, 103358, 104121, 117111,
+  104183, 104190, 104164, 115341, 103367, 129102, 104201, 196874, 104165, 104126, 105410, 104228, 104229, 104236, 104149, 110679,
+  128691, 104204, 458856, 125815, 227368, 1296320
+)
 
-excluded_species <- c(104251, 104257, 104267, 254600, 104270, 104272, 117849, 157611, 103086, 104372, 104375, 265150, 127766, 127767, 148379, 117615, 
-                      117616, 117333, 146735, 104283, 104464, 104465, 104467, 104496, 104284, 104287, 346271, 350046, 346272, 104290, 104292, 346278, 
-                      139178, 146852, 150191, 183084, 183086, 285347, 117855, 135414, 135301, 102553, 135418, 346375, 127782, 149756, 104396, 196775, 
-                      220851, 105414, 105416, 254621, 103375, 266042, 346483, 254602, 237965, 104316, 104321, 196593, 104422, 346520, 104578, 104579, 
-                      117623, 135900, 107590, 107591, 103251, 103253, 247787, 325370, 353202, 254606, 104593, 353211, 220910, 346637, 117742, 110690, 
-                      106377, 104632, 104633, 196784, 157675, 104513, 116115, 346683, 348210, 104841, 353500, 715130, 135442, 104470, 1770057, 103417, 
-                      103413, 254722, 106642, 106656, 129110, 149765, 344717, 128930, 128931, 128935, 149767, 128944, 128946, 344725, 128948, 104694, 
-                      104557, 104560, 104561, 104566, 104568, 117457, 254603, 130219, 135294, 362050, 338262, 117458, 1565062, 104514, 104515, 104516, 
-                      104517, 104339, 105445, 254609, 117989, 105448, 105457, 254610, 104790, 104798, 104799, 254611, 103278, 104811, 720272, 117866, 
-                      117267, 104846, 254612, 104848, 254613, 104851, 104852, 104853, 104855, 104856, 104878, 104459, 103259, 156451, 325384, 110708, 
-                      110709, 110711, 131554, 128956, 128957, 128960, 131582, 104701, 360768, 423829, 104713, 423830, 102166, 102297, 102644, 102647, 
-                      1765892) 
+excluded_species <- c(
+  104251, 104257, 104267, 254600, 104270, 104272, 117849, 157611, 103086, 104372, 104375, 265150, 127766, 127767, 148379, 117615,
+  117616, 117333, 146735, 104283, 104464, 104465, 104467, 104496, 104284, 104287, 346271, 350046, 346272, 104290, 104292, 346278,
+  139178, 146852, 150191, 183084, 183086, 285347, 117855, 135414, 135301, 102553, 135418, 346375, 127782, 149756, 104396, 196775,
+  220851, 105414, 105416, 254621, 103375, 266042, 346483, 254602, 237965, 104316, 104321, 196593, 104422, 346520, 104578, 104579,
+  117623, 135900, 107590, 107591, 103251, 103253, 247787, 325370, 353202, 254606, 104593, 353211, 220910, 346637, 117742, 110690,
+  106377, 104632, 104633, 196784, 157675, 104513, 116115, 346683, 348210, 104841, 353500, 715130, 135442, 104470, 1770057, 103417,
+  103413, 254722, 106642, 106656, 129110, 149765, 344717, 128930, 128931, 128935, 149767, 128944, 128946, 344725, 128948, 104694,
+  104557, 104560, 104561, 104566, 104568, 117457, 254603, 130219, 135294, 362050, 338262, 117458, 1565062, 104514, 104515, 104516,
+  104517, 104339, 105445, 254609, 117989, 105448, 105457, 254610, 104790, 104798, 104799, 254611, 103278, 104811, 720272, 117866,
+  117267, 104846, 254612, 104848, 254613, 104851, 104852, 104853, 104855, 104856, 104878, 104459, 103259, 156451, 325384, 110708,
+  110709, 110711, 131554, 128956, 128957, 128960, 131582, 104701, 360768, 423829, 104713, 423830, 102166, 102297, 102644, 102647,
+  1765892, 139662, 1412088
+)
 
 # ------------------- Filter US based on taxa ------------------------------
 
@@ -210,11 +190,11 @@ cat("Number of records before filtering:", records_before_US, "\n")
 # Step 3: Apply filters to exclude the specified taxa
 filtered_obis_data_US <- obis_data_US %>%
   filter(
-    !(classid %in% excluded_classes) &         # Exclude specified classes
-      !(orderid %in% excluded_orders) &        # Exclude specified orders
-      !(familyid %in% excluded_families) &     # Exclude specified families
-      !(genusid %in% excluded_genera) &        # Exclude specified genera
-      !(speciesid %in% excluded_species)       # Exclude specified species
+    !(classid %in% excluded_classes) & # Exclude specified classes
+      !(orderid %in% excluded_orders) & # Exclude specified orders
+      !(familyid %in% excluded_families) & # Exclude specified families
+      !(genusid %in% excluded_genera) & # Exclude specified genera
+      !(speciesid %in% excluded_species) # Exclude specified species
   )
 # Step 4: Count the number of records after filtering
 records_after_US <- nrow(filtered_obis_data_US)
@@ -232,11 +212,11 @@ cat("Number of records before filtering:", records_before_eurasia, "\n")
 # Step 3: Apply filters to exclude the specified taxa
 filtered_obis_data_eurasia <- obis_data_eurasia %>%
   filter(
-    !(classid %in% excluded_classes) &         # Exclude specified classes
-      !(orderid %in% excluded_orders) &        # Exclude specified orders
-      !(familyid %in% excluded_families) &     # Exclude specified families
-      !(genusid %in% excluded_genera) &        # Exclude specified genera
-      !(speciesid %in% excluded_species)       # Exclude specified species
+    !(classid %in% excluded_classes) & # Exclude specified classes
+      !(orderid %in% excluded_orders) & # Exclude specified orders
+      !(familyid %in% excluded_families) & # Exclude specified families
+      !(genusid %in% excluded_genera) & # Exclude specified genera
+      !(speciesid %in% excluded_species) # Exclude specified species
   )
 # Step 4: Count the number of records after filtering
 records_after_eurasia <- nrow(filtered_obis_data_eurasia)
@@ -255,53 +235,56 @@ obis_data_US <- obis_data_US %>%
   mutate(
     decimalLatitude = as.numeric(decimalLatitude),
     decimalLongitude = as.numeric(decimalLongitude),
-    eventDate = as.character(eventDate)  # Ensure eventDate is a character column
+    eventDate = as.character(eventDate) # Ensure eventDate is a character column
   )
 # Step 4: Fix specific problematic record
 obis_data_US <- obis_data_US %>%
   mutate(eventDate = ifelse(eventDate == "0196-05-29", "1996-05-29", eventDate))
 # Step 4.1: Manually fix specific entries that should all be year 2021
 obis_data_US <- obis_data_US %>%
-  mutate(eventDate = ifelse(eventDate %in% c("11/10/2061", "11/10/2062", "11/10/2063", 
-                                             "11/10/2064", "11/10/2065", "11/10/2068", 
-                                             "11/10/2069"), 
-                            "2021", eventDate))
+  mutate(eventDate = ifelse(eventDate %in% c(
+    "11/10/2061", "11/10/2062", "11/10/2063",
+    "11/10/2064", "11/10/2065", "11/10/2068",
+    "11/10/2069"
+  ),
+  "2021", eventDate
+  ))
 # Step 4.2: Manually fix specific entries that should all be 1947-1949
 obis_data_US <- obis_data_US %>%
   mutate(eventDate = case_when(
     eventDate %in% c("8/23/47", "8/10/47", "7/20/47", "6/29/47", "7/11/47") ~ "1947",
     eventDate %in% c("7/10/48", "7/28/48") ~ "1948",
     eventDate %in% c("6/30/49", "8/23/49", "7/6/49", "8/3/49", "8/24/49") ~ "1949",
-    TRUE ~ eventDate  # Keep all other dates unchanged
+    TRUE ~ eventDate # Keep all other dates unchanged
   ))
 # Step 5: Extract year programmatically from eventDate
 extract_year <- function(date_str) {
   # Handle MM/DD/YYYY format explicitly
   if (grepl("\\d{1,2}/\\d{1,2}/\\d{4}", date_str)) {
-    return(as.numeric(sub(".*/.*/(\\d{4})$", "\\1", date_str)))  # Extract the 4-digit year
+    return(as.numeric(sub(".*/.*/(\\d{4})$", "\\1", date_str))) # Extract the 4-digit year
   }
-  
+
   # Handle ISO 8601 and YYYY formats
   if (grepl("\\b\\d{4}\\b", date_str)) {
     return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
   }
-  
+
   # Handle DD.MM.YYYY format
   if (grepl("\\d{2}\\.\\d{2}\\.\\d{4}", date_str)) {
     return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
   }
-  
+
   # Handle MM/DD/YY or DD/MM/YY format (assuming MM/DD/YY)
   if (grepl("\\d{1,2}/\\d{1,2}/\\d{2}", date_str)) {
     year <- as.numeric(sub(".*?/(\\d{2})$", "\\1", date_str))
-    return(ifelse(year < 50, 2000 + year, 1900 + year))  # Convert to 4-digit year
+    return(ifelse(year < 50, 2000 + year, 1900 + year)) # Convert to 4-digit year
   }
-  
+
   # Handle YYYY/YYYY ranges (take the first year)
   if (grepl("\\d{4}/\\d{4}", date_str)) {
     return(as.numeric(sub("(\\d{4})/.*", "\\1", date_str)))
   }
-  
+
   # Return NA if no year could be extracted
   return(NA)
 }
@@ -311,18 +294,18 @@ obis_data_US <- obis_data_US %>%
 # Step 6: Round coordinates and create unique identifiers
 obis_data_US <- obis_data_US %>%
   mutate(
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)),  # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)),  # Remove whitespaces
-    unique_id = paste(extractedEventYear, roundedLatitude, roundedLongitude, sep = "_")  # Unique identifier
+    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
+    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
+    unique_id = paste(extractedEventYear, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
   )
 gbif_data <- gbif_data %>%
   mutate(
     decimalLatitude = as.numeric(decimalLatitude),
     decimalLongitude = as.numeric(decimalLongitude),
-    year = as.character(year),  # Convert year to character
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)),  # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)),  # Remove whitespaces
-    unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_")  # Unique identifier
+    year = as.character(year), # Convert year to character
+    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
+    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
+    unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
   )
 # Step 7: Check the number of records before filtering
 num_records_before <- nrow(obis_data_US)
@@ -350,36 +333,36 @@ obis_data_eurasia <- obis_data_eurasia %>%
   mutate(
     decimalLatitude = as.numeric(decimalLatitude),
     decimalLongitude = as.numeric(decimalLongitude),
-    eventDate = as.character(eventDate)  # Ensure eventDate is a character column
+    eventDate = as.character(eventDate) # Ensure eventDate is a character column
   )
 # Step 4: Extract year programmatically from eventDate
 extract_year <- function(date_str) {
   # Handle MM/DD/YYYY format explicitly
   if (grepl("\\d{1,2}/\\d{1,2}/\\d{4}", date_str)) {
-    return(as.numeric(sub(".*/.*/(\\d{4})$", "\\1", date_str)))  # Extract the 4-digit year
+    return(as.numeric(sub(".*/.*/(\\d{4})$", "\\1", date_str))) # Extract the 4-digit year
   }
-  
+
   # Handle ISO 8601 and YYYY formats
   if (grepl("\\b\\d{4}\\b", date_str)) {
     return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
   }
-  
+
   # Handle DD.MM.YYYY format
   if (grepl("\\d{2}\\.\\d{2}\\.\\d{4}", date_str)) {
     return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
   }
-  
+
   # Handle MM/DD/YY or DD/MM/YY format (assuming MM/DD/YY)
   if (grepl("\\d{1,2}/\\d{1,2}/\\d{2}", date_str)) {
     year <- as.numeric(sub(".*?/(\\d{2})$", "\\1", date_str))
-    return(ifelse(year < 50, 2000 + year, 1900 + year))  # Convert to 4-digit year
+    return(ifelse(year < 50, 2000 + year, 1900 + year)) # Convert to 4-digit year
   }
-  
+
   # Handle YYYY/YYYY ranges (take the first year)
   if (grepl("\\d{4}/\\d{4}", date_str)) {
     return(as.numeric(sub("(\\d{4})/.*", "\\1", date_str)))
   }
-  
+
   # Return NA if no year could be extracted
   return(NA)
 }
@@ -390,18 +373,18 @@ obis_data_eurasia <- obis_data_eurasia %>%
 # Step 5: Round coordinates and create unique identifiers
 obis_data_eurasia <- obis_data_eurasia %>%
   mutate(
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)),  # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)),  # Remove whitespaces
-    unique_id = paste(extractedEventYear, roundedLatitude, roundedLongitude, sep = "_")  # Unique identifier
+    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
+    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
+    unique_id = paste(extractedEventYear, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
   )
 gbif_data <- gbif_data %>%
   mutate(
     decimalLatitude = as.numeric(decimalLatitude),
     decimalLongitude = as.numeric(decimalLongitude),
-    year = as.character(year),  # Convert year to character
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)),  # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)),  # Remove whitespaces
-    unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_")  # Unique identifier
+    year = as.character(year), # Convert year to character
+    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
+    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
+    unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
   )
 # Step 6: Check the number of records before filtering
 num_records_before <- nrow(obis_data_eurasia)
@@ -488,5 +471,4 @@ filtered_mof <- mof_combined %>%
 write_parquet(filtered_mof, "filtered_mof_combined.parquet")
 cat("Filtered MoF data saved to 'filtered_mof_combined.parquet'\n")
 
-
-
+# nolint end

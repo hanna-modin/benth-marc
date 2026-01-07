@@ -1,3 +1,4 @@
+# nolint start
 install.packages("bit64")
 
 setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\Data paper code\\GBIF")
@@ -8,8 +9,8 @@ library(data.table)
 
 Sys.setenv(
   GBIF_USER = "hannamodin",
-  GBIF_PWD  = "Eternalsunshi85",
-  GBIF_EMAIL= "hanna.m.modin@uit.no"
+  GBIF_PWD = "Eternalsunshi85",
+  GBIF_EMAIL = "hanna.m.modin@uit.no"
 )
 
 # Define the list of benthic phyla
@@ -75,26 +76,26 @@ eurasia_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1
 # Download one wkt at a time
 
 gbif_US <- occ_download(
-  pred_within(US_wkt), 
-  pred_in("taxonKey", taxon_keys),  # Use pred_in for multiple taxon keys
-  pred("hasCoordinate", TRUE),     # Filter for records with coordinates
-  format = "DWCA"                  # Use DWCA format to retain all metadata
+  pred_within(US_wkt),
+  pred_in("taxonKey", taxon_keys), # Use pred_in for multiple taxon keys
+  pred("hasCoordinate", TRUE), # Filter for records with coordinates
+  format = "DWCA" # Use DWCA format to retain all metadata
 )
 
-occ_download_wait(gbif_US) 
+occ_download_wait(gbif_US)
 # Check the status of the US download
 occ_download_meta(gbif_US)
 
-# Download the zipped folder using the download link provided by meta. Unzip folder, name US_data and put in working directory. 
+# Download the zipped folder using the download link provided by meta. Unzip folder, name US_data and put in working directory.
 
 gbif_eurasia <- occ_download(
-  pred_within(eurasia_wkt), 
-  pred_in("taxonKey", taxon_keys),  # Use pred_in for multiple taxon keys
-  pred("hasCoordinate", TRUE),     # Filter for records with coordinates
-  format = "DWCA"                  # Use DWCA format to retain all metadata
+  pred_within(eurasia_wkt),
+  pred_in("taxonKey", taxon_keys), # Use pred_in for multiple taxon keys
+  pred("hasCoordinate", TRUE), # Filter for records with coordinates
+  format = "DWCA" # Use DWCA format to retain all metadata
 )
 
-occ_download_wait(gbif_eurasia) 
+occ_download_wait(gbif_eurasia)
 # Check the status of the Eurasia download
 occ_download_meta(gbif_eurasia)
 
@@ -102,39 +103,48 @@ occ_download_meta(gbif_eurasia)
 
 # ------------------- PREPARE FILTERS ------------------------------------
 
-exclude_classes <- c(212, 359, 131, 367, 360, 10713444, 361, 216, 253, 11592253, 11374670, 7742773, 11210652, 11186032, 9273948, 144, 7188530, 11733052, 
-                     176, 121, 140, 120, 7774442, 224, 254, 11881065, 352, 11418114, 207, 119, 11500725, 11377931, 11569602, 281, 7375758, 139, 355, 
-                     11146120, 11699831, 345)
+exclude_classes <- c(
+  212, 359, 131, 367, 360, 10713444, 361, 216, 253, 11592253, 11374670, 7742773, 11210652, 11186032, 9273948, 144, 7188530, 11733052,
+  176, 121, 140, 120, 7774442, 224, 254, 11881065, 352, 11418114, 207, 119, 11500725, 11377931, 11569602, 281, 7375758, 139, 355,
+  11146120, 11699831, 345
+)
 
-exclude_orders <- c(1313, 549, 590, 587, 588, 883, 9697017, 1441, 1456, 1068, 1005, 1306, 550, 837, 495, 473, 774, 538, 548, 1153, 426, 497, 544, 1305, 12261528, 
-                    1307, 1077, 8403901, 499, 9341894, 773, 890, 888, 1103, 1166, 498, 659, 1312, 1308, 772, 9311931, 1311, 1067, 494, 782, 1310, 537, 12216105, 
-                    1107, 1106, 9463058, 708, 505, 1163, 1069, 11205145, 901, 11125512, 1165, 547, 1167, 12233564, 496, 11131731, 12182793, 771, 11164857, 679, 
-                    687, 9445058, 693, 694, 695, 1417, 11443919, 1428, 9697017, 868)
+exclude_orders <- c(
+  1313, 549, 590, 587, 588, 883, 9697017, 1441, 1456, 1068, 1005, 1306, 550, 837, 495, 473, 774, 538, 548, 1153, 426, 497, 544, 1305, 12261528,
+  1307, 1077, 8403901, 499, 9341894, 773, 890, 888, 1103, 1166, 498, 659, 1312, 1308, 772, 9311931, 1311, 1067, 494, 782, 1310, 537, 12216105,
+  1107, 1106, 9463058, 708, 505, 1163, 1069, 11205145, 901, 11125512, 1165, 547, 1167, 12233564, 496, 11131731, 12182793, 771, 11164857, 679,
+  687, 9445058, 693, 694, 695, 1417, 11443919, 1428, 9697017, 868
+)
 
-exclude_families <- c(7990, 4453, 7996, 4455, 8008, 4428, 4449, 8001, 2073, 6103, 4901, 4902, 4303274, 4960, 9044, 5048, 9052, 6207, 4461, 9054, 9055, 3589)
+exclude_families <- c(7990, 4453, 7996, 4455, 8008, 4428, 4449, 8001, 2073, 6103, 4901, 4902, 4303274, 4960, 9044, 5048, 9052, 6207, 4461, 9054, 9055, 3589, 6498)
 
-exclude_genus <- c(2312692, 2316452, 2312497, 2316610, 2114424, 2115369, 2269480, 2219967, 2115030, 6180409, 2406056, 10816205, 2269549, 2115338, 2114220, 
-                   2114718, 2115124, 2115195, 7927564, 2269491, 5431531, 2234785, 7544733, 2506123, 2114333, 2307067, 2228004, 2332495, 2115284, 2269508, 
-                   2114265, 2114807, 2114924, 2111272, 2332548, 2307434, 2115460, 2114350, 2114914, 2115157, 2306892, 2114649, 2114705, 2114882, 2114837, 
-                   2227984, 4322151, 2115436)
+exclude_genus <- c(
+  2312692, 2316452, 2312497, 2316610, 2114424, 2115369, 2269480, 2219967, 2115030, 6180409, 2406056, 10816205, 2269549, 2115338, 2114220,
+  2114718, 2115124, 2115195, 7927564, 2269491, 5431531, 2234785, 7544733, 2506123, 2114333, 2307067, 2228004, 2332495, 2115284, 2269508,
+  2114265, 2114807, 2114924, 2111272, 2332548, 2307434, 2115460, 2114350, 2114914, 2115157, 2306892, 2114649, 2114705, 2114882, 2114837,
+  2227984, 4322151, 2115436, 2281428, 2283858
+)
 
-exclude_species <- c(2114445, 2114439, 2115377, 2115373, 2115371, 2115375, 2269484, 4282555, 2219970, 2115037, 2115035, 6180410, 2406057, 5233140, 4987686, 
-                     4987684, 2234694, 2269550, 2269551, 2266609, 2115346, 2115344, 5166399, 5166402, 5166405, 2114723, 2115141, 2115138, 2115131, 2115142, 
-                     2115128, 2115197, 2115202, 2115200, 5193700, 1028577, 1028479, 1028572, 1028559, 2269492, 2269495, 2264841, 2264478, 5717325, 2264800, 
-                     4334397, 1028478, 5166387, 2115074, 5166468, 4333480, 2307068, 2307078, 2114329, 2332511, 2332507, 2115300, 2115324, 2115303, 2115325, 
-                     2115305, 5185508, 2115009, 2115018, 5166441, 5166453, 2269510, 4331035, 2222553, 2222554, 5177646, 5177649, 2115262, 5717403, 5718524, 
-                     5165879, 2114278, 2114282, 2114270, 2114284, 8217523, 2227978, 5233166, 2114824, 11082687, 2114817, 2114926, 2114925, 2111274, 2114872, 
-                     4334013, 2114874, 2114873, 7661024, 2264798, 2114956, 2332555, 2332553, 2332557, 4356840, 5166645, 5166639, 2307435, 5165790, 5165820, 
-                     5165822, 5165823, 5165827, 5165810, 5165819, 5165809, 5165793, 5165784, 2115466, 11602113, 2114417, 2114406, 2114351, 2114401, 2265711, 
-                     2115523, 2316453, 5185412, 4334981, 2312501, 2265692, 1028563, 2114923, 2114921, 2114916, 2114917, 2115159, 2307011, 4339887, 2265599, 
-                     5193904, 5193937, 4334696, 2114661, 2114668, 2114663, 4334690, 2217381, 2114711, 8166174, 2269500, 2269434, 2114890, 2114884, 2114900, 
-                     2114894, 2114895, 2114902, 2114886, 2114903, 2114897, 5166379, 2114838, 5177644, 5177643, 5177641, 2227991, 2227990, 2227985, 2312723, 
-                     4322171, 4322180, 9483153, 2316612, 2115437, 4335010, 6467075, 4335044, 6467074, 2216393, 2219836, 2219631, 2219636, 7441628)
+exclude_species <- c(
+  2114445, 2114439, 2115377, 2115373, 2115371, 2115375, 2269484, 4282555, 2219970, 2115037, 2115035, 6180410, 2406057, 5233140, 4987686,
+  4987684, 2234694, 2269550, 2269551, 2266609, 2115346, 2115344, 5166399, 5166402, 5166405, 2114723, 2115141, 2115138, 2115131, 2115142,
+  2115128, 2115197, 2115202, 2115200, 5193700, 1028577, 1028479, 1028572, 1028559, 2269492, 2269495, 2264841, 2264478, 5717325, 2264800,
+  4334397, 1028478, 5166387, 2115074, 5166468, 4333480, 2307068, 2307078, 2114329, 2332511, 2332507, 2115300, 2115324, 2115303, 2115325,
+  2115305, 5185508, 2115009, 2115018, 5166441, 5166453, 2269510, 4331035, 2222553, 2222554, 5177646, 5177649, 2115262, 5717403, 5718524,
+  5165879, 2114278, 2114282, 2114270, 2114284, 8217523, 2227978, 5233166, 2114824, 11082687, 2114817, 2114926, 2114925, 2111274, 2114872,
+  4334013, 2114874, 2114873, 7661024, 2264798, 2114956, 2332555, 2332553, 2332557, 4356840, 5166645, 5166639, 2307435, 5165790, 5165820,
+  5165822, 5165823, 5165827, 5165810, 5165819, 5165809, 5165793, 5165784, 2115466, 11602113, 2114417, 2114406, 2114351, 2114401, 2265711,
+  2115523, 2316453, 5185412, 4334981, 2312501, 2265692, 1028563, 2114923, 2114921, 2114916, 2114917, 2115159, 2307011, 4339887, 2265599,
+  5193904, 5193937, 4334696, 2114661, 2114668, 2114663, 4334690, 2217381, 2114711, 8166174, 2269500, 2269434, 2114890, 2114884, 2114900,
+  2114894, 2114895, 2114902, 2114886, 2114903, 2114897, 5166379, 2114838, 5177644, 5177643, 5177641, 2227991, 2227990, 2227985, 2312723,
+  4322171, 4322180, 9483153, 2316612, 2115437, 4335010, 6467075, 4335044, 6467074, 2216393, 2219836, 2219631, 2219636, 7441628, 5193615,
+  10698600
+)
 
 # -------------------- US DATA FILTERS AND SAVE -------------------------
 
 # Read the data using fread with the correct encoding
-data_US <- fread("US_data/occurrence.txt", quote = "", encoding = "Latin-1")  # ISO-8859-1 is equivalent to Latin-1
+data_US <- fread("US_data/occurrence.txt", quote = "", encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
 
 # Apply filtering steps
 filtered_data_US <- data_US[
@@ -163,25 +173,25 @@ if (file.exists(output_file)) {
   file.remove(output_file)
 }
 # Define chunk size
-chunk_size <- 1e6  # 1 million rows per chunk
+chunk_size <- 1e6 # 1 million rows per chunk
 # Read the header (column names) separately with the correct encoding
-header <- fread(input_file, nrows = 0, encoding = "Latin-1")  # ISO-8859-1 is equivalent to Latin-1
-column_names <- names(header)  # Store column names
+header <- fread(input_file, nrows = 0, encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
+column_names <- names(header) # Store column names
 # Initialize variables
-skip <- 0       # Number of rows to skip
+skip <- 0 # Number of rows to skip
 chunk_number <- 1
 append <- FALSE # Append mode for fwrite
 # Loop through the file in chunks
 repeat {
   # Read a chunk of data with the correct encoding
   chunk <- fread(input_file, nrows = chunk_size, skip = skip, header = FALSE, quote = "", encoding = "Latin-1")
-  
+
   # Break the loop if the chunk is empty (end of file)
   if (nrow(chunk) == 0) break
-  
+
   # Assign column names to the chunk
   setnames(chunk, column_names)
-  
+
   # Apply filtering steps
   filtered_chunk <- chunk[
     occurrenceStatus == "PRESENT" &
@@ -196,16 +206,18 @@ repeat {
       (!(genusKey %in% exclude_genus) | is.na(genusKey)) &
       (!(speciesKey %in% exclude_species) | is.na(speciesKey))
   ]
-  
+
   # Write the filtered chunk to the output file with the correct encoding
   fwrite(filtered_chunk, output_file, sep = "\t", append = append, bom = TRUE)
-  
+
   # Update variables for the next iteration
   skip <- skip + chunk_size
-  append <- TRUE  # Append mode for subsequent chunks
+  append <- TRUE # Append mode for subsequent chunks
   chunk_number <- chunk_number + 1
-  
+
   # Print progress
   cat("Processed chunk", chunk_number, "\n")
 }
 cat("Processing complete. Filtered data saved to", output_file, "\n")
+
+# nolint end
