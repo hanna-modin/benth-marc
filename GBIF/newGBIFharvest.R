@@ -1,8 +1,12 @@
 # nolint start
 install.packages("bit64")
+install.packages("pak")
+pak::pkg_install("ropensci/rgbif") # dev version
 
-setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\Data paper code\\GBIF")
-library(rgbif)
+library(rgbif) 
+
+setwd("C:\\Users\\Admin\\Documents\\arctic-benthic-biodiversity\\GBIF")
+
 library(dplyr)
 library(CoordinateCleaner)
 library(data.table)
@@ -79,8 +83,9 @@ gbif_US <- occ_download(
   pred_within(US_wkt),
   pred_in("taxonKey", taxon_keys), # Use pred_in for multiple taxon keys
   pred("hasCoordinate", TRUE), # Filter for records with coordinates
-  format = "DWCA" # Use DWCA format to retain all metadata
-)
+  format = "DWCA",
+  verbatim_extensions = "http://rs.tdwg.org/dwc/terms/MeasurementOrFact"
+    )
 
 occ_download_wait(gbif_US)
 # Check the status of the US download
@@ -92,8 +97,9 @@ gbif_eurasia <- occ_download(
   pred_within(eurasia_wkt),
   pred_in("taxonKey", taxon_keys), # Use pred_in for multiple taxon keys
   pred("hasCoordinate", TRUE), # Filter for records with coordinates
-  format = "DWCA" # Use DWCA format to retain all metadata
-)
+  format = "DWCA",
+  verbatim_extensions = "http://rs.tdwg.org/dwc/terms/MeasurementOrFact"
+    )
 
 occ_download_wait(gbif_eurasia)
 # Check the status of the Eurasia download

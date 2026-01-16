@@ -1,5 +1,5 @@
 # nolint start
-setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\Data paper code\\OBIS")
+setwd("C:\\Users\\Admin\\Documents\\arctic-benthic-biodiversity\\OBIS")
 # install.packages("lubridate")
 
 # Load required libraries
