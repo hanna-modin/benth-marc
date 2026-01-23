@@ -71,3 +71,4 @@ GEBCO/*.tiff
 !gbif_taxonkey_original.csv
 !columns_in_final.xlsx
 !original.xlsx
+!unique_bibliographic_citations_manual.csv

@@ -229,7 +229,7 @@ write_parquet(filtered_obis_data_eurasia, "filtered_occurrences_eurasia.parquet"
 # Step 1: Load the OBIS data
 obis_data_US <- read_parquet("filtered_occurrences_US.parquet")
 # Step 2: Load the GBIF stations (stations_GBIF.csv)
-gbif_data <- read.csv("stations_GBIF.csv")
+gbif_data <- read.csv("../GBIF/stations_keep.csv")
 # Step 3: Ensure numeric columns and round coordinates to 4 decimal places
 obis_data_US <- obis_data_US %>%
   mutate(
@@ -327,7 +327,7 @@ write_parquet(filtered_obis_data_US, "filtered_notgbif_US.parquet")
 # Step 1: Load the OBIS data
 obis_data_eurasia <- read_parquet("filtered_occurrences_eurasia.parquet")
 # Step 2: Load the GBIF stations (stations_GBIF.csv)
-gbif_data <- read.csv("stations_GBIF.csv")
+gbif_data <- read.csv("../GBIF/stations_keep.csv")
 # Step 3: Ensure numeric columns and round coordinates to 4 decimal places
 obis_data_eurasia <- obis_data_eurasia %>%
   mutate(
@@ -441,8 +441,6 @@ write_parquet(filtered_merged, "merged_filtered.parquet")
 
 
 # /////////////////////// MOF WORKFLOW /////////////////////////////
-
-# CHECK WHETHER ALL MOF ENTRIES HAVE ASSIGNED ID VALUES
 
 # ---------------------- Merge datasets ---------------------------
 
