@@ -323,22 +323,25 @@ name_backbone("Phalacrophorus")
 name_backbone("Typhloscolex")
 #2316610
 
+# //////////////////////////////////////////////////
+
 # Redistribute records between subsets based on keys
+# OBLIGATE BENTHOS
 #Phyla
 name_backbone("Bryozoa")
 #53
 name_backbone("Porifera")
 #105
 name_backbone("Echinodermata")
-#50 
+#50
 name_backbone("Hemichordata")
 #75
 name_backbone("Loricifera")
-#5967457  
+#5967457
 name_backbone("Sipuncula")
 #74
 name_backbone("Priapulida")
-#5963150  
+#5963150
 name_backbone("Nemertea")
 #63
 name_backbone("Nematoda")
