@@ -72,3 +72,4 @@ GEBCO/*.tiff
 !columns_in_final.xlsx
 !original.xlsx
 !unique_bibliographic_citations_manual.csv
+!unique_stations_with_status_manual.csv
