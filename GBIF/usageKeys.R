@@ -373,6 +373,8 @@ name_backbone("Caudofoveata")
 #8066236  
 name_backbone("Staurozoa")
 #309  
+name_backbone("Anthozoa")
+#206  
 #Order
 name_backbone("Sepiida")
 #989
@@ -400,6 +402,11 @@ name_backbone("Rhabdocoela")
 #5967598
 name_backbone("Cumacea")
 #1500
+name_backbone("Rhynchobdellida")
+#1078
+name_backbone("Enchytraeida")
+#5958700
+
 # Families
 name_backbone("Sertulariidae")
 #7325
@@ -427,6 +434,12 @@ name_backbone("Haleciidae")
 #3973   
 name_backbone("Diastylidae")
 #9676    
+name_backbone("Oregoniidae")
+#4529
+name_backbone("Idoteidae")
+#8888
+name_backbone("Nannoniscidae")
+#8895
 # Genus
 name_backbone("Parakanthophoreus")
 #8309288  
@@ -440,6 +453,8 @@ name_backbone("Exosphaeroma")
 #2207284
 name_backbone("Balticina")
 #4283770      
+name_backbone("Limnoria")
+#2202982
 
 # "Uncertain" classes
 name_backbone("Cephalopoda")
