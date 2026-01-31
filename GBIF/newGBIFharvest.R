@@ -1,11 +1,16 @@
 # nolint start
-install.packages("bit64")
-install.packages("pak")
+#install.packages("bit64")
+#install.packages("pak")
+install.packages("rgbif")
 pak::pkg_install("ropensci/rgbif") # dev version
+
+install.packages("devtools")
+devtools::install_github("ropensci/rgbif")
+1
 
 library(rgbif) 
 
-setwd("C:\\Users\\Admin\\Documents\\arctic-benthic-biodiversity\\GBIF")
+setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\arctic-benthic-biodiversity\\GBIF")
 
 library(dplyr)
 library(CoordinateCleaner)
@@ -127,7 +132,7 @@ exclude_families <- c(7990, 4453, 7996, 4455, 8008, 4428, 4449, 8001, 2073, 6103
 exclude_genus <- c(
   2312692, 2316452, 2312497, 2316610, 2114424, 2115369, 2269480, 2219967, 2115030, 6180409, 2406056, 10816205, 2269549, 2115338, 2114220,
   2114718, 2115124, 2115195, 7927564, 2269491, 5431531, 2234785, 7544733, 2506123, 2114333, 2307067, 2228004, 2332495, 2115284, 2269508,
-  2114265, 2114807, 2114924, 2111272, 2332548, 2307434, 2115460, 2114350, 2114914, 2115157, 2306892, 2114649, 2114705, 2114882, 2114837,
+  2114265, 2114807, 2114924, 2111272, 2332548, 2115460, 2114350, 2114914, 2115157, 2306892, 2114649, 2114705, 2114882, 2114837,
   2227984, 4322151, 2115436, 2281428, 2283858, 2286678, 4407666
 )
 
