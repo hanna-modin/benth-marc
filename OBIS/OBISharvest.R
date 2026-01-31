@@ -1,6 +1,9 @@
 # nolint start
-setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\arctic-benthic-biodiversity\\OBIS")
-# install.packages("lubridate")
+setwd("C:\\Users\\hamod4691\\Code\\arctic-benthic-biodiversity\\OBIS")
+#install.packages("lubridate")
+#install.packages("arrow")
+#install.packages("dplyr")
+#install.packages("robis")
 
 # Load required libraries
 library(robis) # For downloading data from OBIS
