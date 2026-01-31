@@ -1,16 +1,15 @@
 # nolint start
 #install.packages("bit64")
 #install.packages("pak")
-install.packages("rgbif")
-pak::pkg_install("ropensci/rgbif") # dev version
+#install.packages("rgbif")
+#pak::pkg_install("ropensci/rgbif") # dev version
 
-install.packages("devtools")
-devtools::install_github("ropensci/rgbif")
-1
+#install.packages("devtools")
+#devtools::install_github("ropensci/rgbif")
 
 library(rgbif) 
 
-setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\arctic-benthic-biodiversity\\GBIF")
+setwd("C:\\Users\\hamod4691\\Code\\arctic-benthic-biodiversity\\GBIF")
 
 library(dplyr)
 library(CoordinateCleaner)
@@ -232,3 +231,4 @@ repeat {
 cat("Processing complete. Filtered data saved to", output_file, "\n")
 
 # nolint end
+

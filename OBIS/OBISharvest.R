@@ -1,5 +1,5 @@
 # nolint start
-setwd("C:\\Users\\Admin\\Documents\\arctic-benthic-biodiversity\\OBIS")
+setwd("C:\\Users\\hamod4691\\OneDrive - UiT Office 365\\arctic-benthic-biodiversity\\OBIS")
 # install.packages("lubridate")
 
 # Load required libraries
@@ -470,3 +470,4 @@ write_parquet(filtered_mof, "filtered_mof_combined.parquet")
 cat("Filtered MoF data saved to 'filtered_mof_combined.parquet'\n")
 
 # nolint end
+
