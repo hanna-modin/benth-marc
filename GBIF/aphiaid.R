@@ -5,9 +5,13 @@ if (!require("worrms", quietly = TRUE)) {
 if (!require("tidyverse", quietly = TRUE)) {
   install.packages("tidyverse")
 }
+if (!require("writexl", quietly = TRUE)) {
+  install.packages("writexl")
+}
 
 library(worrms)
 library(tidyverse)
+library(writexl)
 
 setwd("C:\\Users\\hamod4691\\Code\\arctic-benthic-biodiversity\\GBIF")
 
@@ -64,5 +68,5 @@ cleaned_names_df <- cleaned_names_df %>%
   left_join(aphia_map, by = "cleaned_name")
 
 # Save the updated data frame back to the CSV file
-write.csv(cleaned_names_df, "unique_names_aphia.csv", row.names = FALSE)
-message("Updated CSV file saved with AphiaID column")
+write_xlsx(cleaned_names_df, "unique_names_aphia.xlsx")
+message("Updated excel file saved with AphiaID column")
