@@ -1,0 +1,3 @@
+SELECT *
+FROM data
+WHERE acceptedScientificName = 'Paracyprideis pseudopunctillata Swain, 1963'
