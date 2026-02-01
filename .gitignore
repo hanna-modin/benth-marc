@@ -74,3 +74,4 @@ GEBCO/*.tiff
 !unique_bibliographic_citations_manual.csv
 !unique_stations_with_status_manual.csv
 !obligate_benthos.xlsx
+!unique_names_aphia_manual.xlsx
