@@ -7,12 +7,12 @@
 #install.packages("devtools")
 #devtools::install_github("ropensci/rgbif")
 
-library(rgbif) 
+ 
 
 setwd("C:\\Users\\hamod4691\\Code\\arctic-benthic-biodiversity\\GBIF")
 
+library(rgbif)
 library(dplyr)
-library(CoordinateCleaner)
 library(data.table)
 
 Sys.setenv(
@@ -124,7 +124,6 @@ exclude_orders <- c(
   1307, 1077, 8403901, 499, 9341894, 773, 890, 888, 1103, 1166, 498, 659, 1312, 1308, 772, 9311931, 1311, 1067, 494, 782, 1310, 537, 12216105,
   1107, 1106, 9463058, 708, 505, 1163, 1069, 11205145, 901, 11125512, 1165, 547, 1167, 12233564, 496, 11131731, 12182793, 771, 11164857, 679,
   687, 9445058, 693, 694, 695, 1417, 11443919, 1428, 9697017, 868, 6902, 8391193, 9301143
-
 )
 
 exclude_families <- c(
@@ -240,4 +239,3 @@ repeat {
 cat("Processing complete. Filtered data saved to", output_file, "\n")
 
 # nolint end
-
