@@ -21,6 +21,13 @@
 *.prj
 *.dbf
 *.cpg
+*.qml
+*.lyr
+*.sld
+*.shp.xml
+*.sbn
+*.xml
+*.sbx
 
 # Large image files
 *.png
