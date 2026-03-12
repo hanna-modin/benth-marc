@@ -84,3 +84,5 @@ GEBCO/*.tiff
 !unique_names_aphia_manual.xlsx
 !SQL_queries.txt
 !taxa_need_filtering_step_2_gbifid_manual.xlsx
+!arctic-benthic-biodiversity.code-workspace
+
