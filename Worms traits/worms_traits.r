@@ -86,6 +86,38 @@ get_worms_fgrp <- function(AphiaID) {
 		)
 }
 
+worms_fgrp_col_types <- readr::cols(
+	AphiaID = readr::col_double(),
+	stage = readr::col_character(),
+	functional_group_raw = readr::col_character(),
+	functional_group_normalized = readr::col_character(),
+	inherited = readr::col_logical(),
+	inherited_from_AphiaID = readr::col_character(),
+	note = readr::col_character()
+)
+
+coerce_worms_fgrp_schema <- function(df) {
+	df %>%
+		mutate(
+			AphiaID = as.numeric(AphiaID),
+			stage = as.character(stage),
+			functional_group_raw = as.character(functional_group_raw),
+			functional_group_normalized = as.character(functional_group_normalized),
+			inherited = as.logical(inherited),
+			inherited_from_AphiaID = as.character(inherited_from_AphiaID),
+			note = as.character(note)
+		) %>%
+		select(
+			AphiaID,
+			stage,
+			functional_group_raw,
+			functional_group_normalized,
+			inherited,
+			inherited_from_AphiaID,
+			note
+		)
+}
+
 run_worms_fgrp_ids <- function(
 	aphia_ids,
 	chunk_size = 250,
@@ -119,7 +151,12 @@ run_worms_fgrp_ids <- function(
 	}
 
 	if (!is.null(checkpoint_path) && isTRUE(resume_from_checkpoint) && file.exists(checkpoint_path)) {
-		existing_checkpoint <- readr::read_csv(checkpoint_path, show_col_types = FALSE)
+		existing_checkpoint <- readr::read_csv(
+			checkpoint_path,
+			col_types = worms_fgrp_col_types,
+			show_col_types = FALSE
+		) %>%
+			coerce_worms_fgrp_schema()
 		completed_ids <- existing_checkpoint %>%
 		filter(!is.na(AphiaID)) %>%
 		distinct(AphiaID)
@@ -153,7 +190,8 @@ run_worms_fgrp_ids <- function(
 		chunk_out <- purrr::map_dfr(chunk_ids, function(x) {
 			if (pause_sec > 0) Sys.sleep(pause_sec)
 			get_worms_fgrp(AphiaID = x)
-		})
+		}) %>%
+			coerce_worms_fgrp_schema()
 
 		if (!is.null(checkpoint_path)) {
 			readr::write_csv(chunk_out, checkpoint_path, append = file.exists(checkpoint_path))
@@ -163,10 +201,12 @@ run_worms_fgrp_ids <- function(
 		message("Completed chunk ", i, " of ", length(idx), " (", length(chunk_ids), " IDs)")
 	}
 
-	new_rows <- bind_rows(out_list)
+	new_rows <- bind_rows(out_list) %>%
+		coerce_worms_fgrp_schema()
 
 	if (!is.null(existing_checkpoint)) {
-		bind_rows(existing_checkpoint, new_rows)
+		bind_rows(existing_checkpoint, new_rows) %>%
+			coerce_worms_fgrp_schema()
 	} else {
 		new_rows
 	}
@@ -205,7 +245,7 @@ all_stage_fg_results <- run_worms_fgrp_ids(
 	chunk_size = 250,
 	pause_sec = 0.02,
 	checkpoint_path = "functional_groups_checkpoint.csv",
-	reset_checkpoint = FALSE,
+	reset_checkpoint = TRUE,
 	resume_from_checkpoint = TRUE
 )
 
