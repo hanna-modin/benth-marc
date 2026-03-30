@@ -249,4 +249,7 @@ all_stage_fg_results <- run_worms_fgrp_ids(
 	resume_from_checkpoint = TRUE
 )
 
-write_csv(all_stage_fg_results, "functional_groups_by_lifestage_with_inheritance.csv")
+write_csv(all_stage_fg_results, "functional_groups.csv")
+
+
+#CHANGE RESET CHECKPOINT TO FALSE
