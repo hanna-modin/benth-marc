@@ -253,6 +253,3 @@ write_csv(all_stage_fg_results, "functional_groups.csv")
 
 
 #CHANGE RESET CHECKPOINT TO FALSE
-
-citation("rgbif")
-citation("worrms")
