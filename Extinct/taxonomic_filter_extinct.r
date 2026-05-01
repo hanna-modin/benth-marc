@@ -101,22 +101,28 @@ for(i in seq_len(nrow(df))){
 
 sheet_name <- if (file.exists(input_xlsx)) readxl::excel_sheets(input_xlsx)[1] else 'Sheet1'
 
-# Handle multi-row data (e.g., multiple stages per AphiaID) by re-joining extinct info by AphiaID
+# Collate to one extinct record per AphiaID for downstream merging
 if(!is.na(aphia_col) && 'AphiaID' %in% names(df)){
 	extinct_cols <- c('worms_query_source', 'worms_AphiaID', 'worms_matched_name', 'worms_isExtinct')
 	extinct_map <- df %>%
 		select(AphiaID, all_of(extinct_cols)) %>%
-		distinct() %>%
-		filter(!is.na(AphiaID))
-	df <- df %>%
-		select(-all_of(extinct_cols)) %>%
-		left_join(extinct_map, by = 'AphiaID')
+		filter(!is.na(AphiaID)) %>%
+		group_by(AphiaID) %>%
+		summarise(
+			worms_query_source = paste(sort(unique(na.omit(worms_query_source))), collapse = ';'),
+			worms_AphiaID = dplyr::first(AphiaID),
+			worms_matched_name = paste(sort(unique(na.omit(worms_matched_name))), collapse = ';'),
+			worms_isExtinct = if(all(is.na(worms_isExtinct))) NA else any(worms_isExtinct %in% TRUE, na.rm = TRUE),
+			.groups = 'drop'
+		)
+} else {
+	extinct_map <- df %>%
+		select(any_of(c('AphiaID', 'worms_query_source', 'worms_AphiaID', 'worms_matched_name', 'worms_isExtinct')))
 }
 
-taxonomic_filter_workbook <- list()
-taxonomic_filter_workbook[[sheet_name]] <- df
-writexl::write_xlsx(taxonomic_filter_workbook, input_xlsx)
-message('Wrote results to: ', input_xlsx)
+out_csv <- file.path('..', 'taxonomic_filter_extinct_results.csv')
+readr::write_csv(extinct_map, out_csv, na = '')
+message('Wrote results to: ', out_csv)
 
 invisible(df)
 

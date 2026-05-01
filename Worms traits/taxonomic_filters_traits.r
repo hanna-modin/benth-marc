@@ -71,20 +71,21 @@ get_worms_fgrp <- function(AphiaID, max_retries = 3, base_wait = 0.5) {
 						TRUE ~ tolower(fun_grp)
 					)
 					) %>%
-					select(AphiaID, stage, functional_group_raw, functional_group_normalized)
+						select(AphiaID, AphiaID_Inherited, stage, functional_group_raw, functional_group_normalized)
 
-				return(out %>%
-					group_by(AphiaID, stage) %>%
-					summarise(
-						functional_group_raw = paste(sort(unique(functional_group_raw)), collapse = "; "),
-						functional_group_normalized = paste(sort(unique(functional_group_normalized)), collapse = "; "),
-						inherited = NA,
-						inherited_from_AphiaID = NA_character_,
-						note = case_when(
-							TRUE ~ "Functional group for this life stage is directly associated with the queried AphiaID"
-						),
-						.groups = "drop"
-					))
+					return(out %>%
+						group_by(AphiaID, stage) %>%
+						summarise(
+							functional_group_raw = paste(sort(unique(functional_group_raw)), collapse = "; "),
+							functional_group_normalized = paste(sort(unique(functional_group_normalized)), collapse = "; "),
+							inherited = any(AphiaID_Inherited != AphiaID, na.rm = TRUE),
+							inherited_from_AphiaID = paste(sort(unique(AphiaID_Inherited[!is.na(AphiaID_Inherited)])), collapse = "; "),
+							note = case_when(
+								inherited ~ "At least one functional group for this life stage is inherited from a higher taxon",
+								TRUE ~ "Functional group for this life stage is directly associated with the queried AphiaID"
+							),
+							.groups = "drop"
+						))
 			},
 			error = function(e) {
 				err_msg <- as.character(e)
@@ -153,6 +154,12 @@ coerce_worms_fgrp_schema <- function(df) {
 		)
 }
 
+normalize_aphia_id <- function(x) {
+	parsed <- gsub("[^0-9]", "", as.character(x))
+	parsed[parsed == ""] <- NA_character_
+	as.integer(parsed)
+}
+
 run_worms_fgrp_ids <- function(
 	aphia_ids,
 	chunk_size = 250,
@@ -161,7 +168,7 @@ run_worms_fgrp_ids <- function(
 	reset_checkpoint = TRUE,
 	resume_from_checkpoint = TRUE
 ) {
-	ids_tbl <- tibble(AphiaID = as.numeric(aphia_ids)) %>%
+	ids_tbl <- tibble(AphiaID = normalize_aphia_id(aphia_ids)) %>%
 		filter(!is.na(AphiaID)) %>%
 		distinct()
 
@@ -252,9 +259,7 @@ read_aphia_ids_excel <- function(path, id_col = "AphiaID") {
 	if (!id_col %in% names(in_dat)) {
 		stop("Column '", id_col, "' not found in ", path)
 	}
-	parsed <- gsub("[^0-9]", "", as.character(in_dat[[id_col]]))
-	parsed[parsed == ""] <- NA_character_
-	as.integer(parsed)
+	normalize_aphia_id(in_dat[[id_col]])
 }
 
 read_taxonomic_filter_input <- function(path) {
@@ -272,11 +277,7 @@ read_taxonomic_filter_input <- function(path) {
 
 	in_dat <- in_dat %>%
 		mutate(
-			AphiaID = {
-				parsed <- gsub("[^0-9]", "", as.character(AphiaID))
-				parsed[parsed == ""] <- NA_character_
-				as.integer(parsed)
-			},
+			AphiaID = normalize_aphia_id(AphiaID),
 			scientificname = as.character(scientificname)
 		) %>%
 		select(AphiaID, scientificname, everything())

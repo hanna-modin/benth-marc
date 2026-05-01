@@ -83,14 +83,14 @@ sheet_name <- if (file.exists(out_xlsx)) readxl::excel_sheets(out_xlsx)[1] else 
 
 # Handle multi-row data (e.g., multiple stages per AphiaID) by re-joining environment by AphiaID
 if(!is.na(aphia_col) && "AphiaID" %in% names(df)){
-	df_key <- df %>%
-		select(AphiaID) %>%
-		distinct() %>%
-		mutate(row_id = row_number())
 	environment_map <- df %>%
 		select(AphiaID, worms_environment) %>%
-		distinct() %>%
-		filter(!is.na(AphiaID))
+		filter(!is.na(AphiaID)) %>%
+		group_by(AphiaID) %>%
+		summarise(
+			worms_environment = paste(sort(unique(na.omit(worms_environment))), collapse = ";"),
+			.groups = "drop"
+		)
 	df <- df %>%
 		select(-worms_environment) %>%
 		left_join(environment_map, by = "AphiaID")
@@ -98,6 +98,8 @@ if(!is.na(aphia_col) && "AphiaID" %in% names(df)){
 
 taxonomic_filter_workbook <- list()
 taxonomic_filter_workbook[[sheet_name]] <- df
+
+out_xlsx <- file.path("..", "taxonomic_filter_with_environment.xlsx")
 writexl::write_xlsx(taxonomic_filter_workbook, out_xlsx)
 message("Wrote results to: ", out_xlsx)
 
