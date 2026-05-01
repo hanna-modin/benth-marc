@@ -2,8 +2,8 @@
 ## Usage: run this script from the `Environment` folder; it reads ../taxonomic_filter.xlsx
 
 pkgs <- c("readxl", "dplyr", "purrr", "worrms", "readr", "writexl")
-inst <- pkgs[!pkgs %in% installed.packages()[,"Package"]]
-if(length(inst)) install.packages(inst)
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if(length(missing_pkgs)) stop("Missing required packages: ", paste(missing_pkgs, collapse = ", "))
 
 library(readxl)
 library(dplyr)
@@ -78,8 +78,27 @@ names(envs) <- unique(query_keys)
 # Map back to rows
 df$worms_environment <- envs[query_keys]
 
-out_xlsx <- file.path("..", "taxonomic_filter_with_environment.xlsx")
-write_xlsx(df, out_xlsx)
+out_xlsx <- file.path("..", "taxonomic_filter.xlsx")
+sheet_name <- if (file.exists(out_xlsx)) readxl::excel_sheets(out_xlsx)[1] else "Sheet1"
+
+# Handle multi-row data (e.g., multiple stages per AphiaID) by re-joining environment by AphiaID
+if(!is.na(aphia_col) && "AphiaID" %in% names(df)){
+	df_key <- df %>%
+		select(AphiaID) %>%
+		distinct() %>%
+		mutate(row_id = row_number())
+	environment_map <- df %>%
+		select(AphiaID, worms_environment) %>%
+		distinct() %>%
+		filter(!is.na(AphiaID))
+	df <- df %>%
+		select(-worms_environment) %>%
+		left_join(environment_map, by = "AphiaID")
+}
+
+taxonomic_filter_workbook <- list()
+taxonomic_filter_workbook[[sheet_name]] <- df
+writexl::write_xlsx(taxonomic_filter_workbook, out_xlsx)
 message("Wrote results to: ", out_xlsx)
 
 ## End

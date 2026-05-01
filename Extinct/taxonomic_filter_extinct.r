@@ -5,11 +5,8 @@
 `%||%` <- function(a,b) if(!is.null(a)) a else b
 
 required <- c('readxl','httr','jsonlite','dplyr','stringr')
-to_install <- required[!sapply(required, require, character.only=TRUE, quietly=TRUE)]
-if(length(to_install)){
-	install.packages(to_install, repos='https://cran.rstudio.com')
-	sapply(required, require, character.only=TRUE)
-}
+missing_pkgs <- required[!vapply(required, requireNamespace, logical(1), quietly = TRUE)]
+if(length(missing_pkgs)) stop('Missing required packages: ', paste(missing_pkgs, collapse = ', '))
 
 # locate taxonomic_filter.xlsx in likely locations relative to current working dir
 candidate_paths <- c(
@@ -102,9 +99,24 @@ for(i in seq_len(nrow(df))){
 	df$worms_query_source[i] <- 'none'
 }
 
-out_csv <- file.path(dirname(input_xlsx), 'taxonomic_filter_extinct_results.csv')
-write.csv(df, out_csv, row.names=FALSE)
-message('Wrote results to: ', out_csv)
+sheet_name <- if (file.exists(input_xlsx)) readxl::excel_sheets(input_xlsx)[1] else 'Sheet1'
+
+# Handle multi-row data (e.g., multiple stages per AphiaID) by re-joining extinct info by AphiaID
+if(!is.na(aphia_col) && 'AphiaID' %in% names(df)){
+	extinct_cols <- c('worms_query_source', 'worms_AphiaID', 'worms_matched_name', 'worms_isExtinct')
+	extinct_map <- df %>%
+		select(AphiaID, all_of(extinct_cols)) %>%
+		distinct() %>%
+		filter(!is.na(AphiaID))
+	df <- df %>%
+		select(-all_of(extinct_cols)) %>%
+		left_join(extinct_map, by = 'AphiaID')
+}
+
+taxonomic_filter_workbook <- list()
+taxonomic_filter_workbook[[sheet_name]] <- df
+writexl::write_xlsx(taxonomic_filter_workbook, input_xlsx)
+message('Wrote results to: ', input_xlsx)
 
 invisible(df)
 
