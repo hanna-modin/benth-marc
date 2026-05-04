@@ -24,7 +24,7 @@ Sys.setenv(
 # Define the list of benthic phyla
 taxon_keys <- c(42, 52, 54, 50, 43, 105, 74, 53, 44, 110, 5967481, 63, 14, 108, 75, 5959089, 5963150, 5967457, 19, 8173593)
 
-US_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 90, -14 90, -16 90, -18 90, -20 90, -22 90, -24 90, -26 90, -28 90,
+west_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 90, -14 90, -16 90, -18 90, -20 90, -22 90, -24 90, -26 90, -28 90,
 -30 90, -32 90, -34 90, -36 90, -38 90, -40 90, -42 90, -44 90, -46 90, -48 90, -50 90, -52 90, -54 90, -56 90, -58 90, -60 90, -62 90, -64 90, -66 90,
 -68 90, -70 90, -72 90, -74 90, -76 90, -78 90, -80 90, -82 90, -84 90, -86 90, -88 90, -90 90, -92 90, -94 90, -96 90, -98 90, -100 90, -102 90,
 -104 90, -106 90, -108 90, -110 90, -112 90, -114 90, -116 90, -118 90, -120 90, -122 90, -124 90, -126 90, -128 90, -130 90, -132 90, -134 90, -136 90,
@@ -56,7 +56,7 @@ US_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 
 -8.54764 60.000657, -8.153931 60.003245, -7.760226 60.006292, -7.366525 60.009797, -3.75564 62.006725, -3.110429 62.003576, -2.460795 62.000845,
 -1.81116 61.998566, -1.161523 61.99674, -0.511885 61.995367, 0 61.994641))"
 
-eurasia_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1.315226 61.993826, 1.843057 61.99418, 2.492697 61.994899, 3.142335 61.996071,
+east_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1.315226 61.993826, 1.843057 61.99418, 2.492697 61.994899, 3.142335 61.996071,
 3.791972 61.997694, 4.441609 61.999771, 5.091243 62.0023, 5.731005 62.005209, 7.405854 62.081979, 8.273698 62.200394, 11.057224 63.169396, 12.112365 63.754348,
 13.506069 65.507623, 15.246571 66.519988, 14.648717 67.118063, 15.551459 67.048202, 16.55603 67.167799, 18.175375 67.649737, 20.536666 68.753852,
 25.288968 69.074687, 28.660871 68.936223, 31.054727 67.007113, 32.316293 65.758155, 34.770418 64.028925, 37.568076 63.213859, 39.681152 63.727947,
@@ -83,33 +83,33 @@ eurasia_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1
 
 # Download one wkt at a time
 
-gbif_US <- occ_download(
-  pred_within(US_wkt),
+gbif_west <- occ_download(
+  pred_within(west_wkt),
   pred_in("taxonKey", taxon_keys), # Use pred_in for multiple taxon keys
   pred("hasCoordinate", TRUE), # Filter for records with coordinates
   format = "DWCA",
   verbatim_extensions = "http://rs.tdwg.org/dwc/terms/MeasurementOrFact"
     )
 
-occ_download_wait(gbif_US)
-# Check the status of the US download
-occ_download_meta(gbif_US)
+occ_download_wait(gbif_west)
+# Check the status of the west download
+occ_download_meta(gbif_west)
 
-# Download the zipped folder using the download link provided by meta. Unzip folder, name US_data and put in working directory.
+# Download the zipped folder using the download link provided by meta. Unzip folder, name west_data and put in working directory.
 
-gbif_eurasia <- occ_download(
-  pred_within(eurasia_wkt),
+gbif_east <- occ_download(
+  pred_within(east_wkt),
   pred_in("taxonKey", taxon_keys), # Use pred_in for multiple taxon keys
   pred("hasCoordinate", TRUE), # Filter for records with coordinates
   format = "DWCA",
   verbatim_extensions = "http://rs.tdwg.org/dwc/terms/MeasurementOrFact"
     )
 
-occ_download_wait(gbif_eurasia)
-# Check the status of the Eurasia download
-occ_download_meta(gbif_eurasia)
+occ_download_wait(gbif_east)
+# Check the status of the east download
+occ_download_meta(gbif_east)
 
-# Download the zipped folder using the download link provided by meta. Unzip folder, name eurasia_data and put in working directory
+# Download the zipped folder using the download link provided by meta. Unzip folder, name east_data and put in working directory
 
 # ------------------- PREPARE FILTERS ------------------------------------
 
@@ -120,10 +120,10 @@ exclude_classes <- c(
 )
 
 exclude_orders <- c(
-  1313, 549, 590, 587, 588, 883, 9697017, 1441, 1456, 1068, 1005, 1306, 550, 837, 495, 473, 774, 538, 548, 1153, 426, 497, 544, 1305, 12261528,
+  1313, 549, 590, 587, 588, 883, 9697017, 1441, 1456, 1068, 1005, 1306, 550, 837, 495, 473, 774, 538, 548, 1153, 497, 544, 1305, 12261528,
   1307, 1077, 8403901, 499, 9341894, 773, 890, 888, 1103, 1166, 498, 659, 1312, 1308, 772, 9311931, 1311, 1067, 494, 782, 1310, 537, 12216105,
-  1107, 1106, 9463058, 708, 505, 1163, 1069, 11205145, 901, 11125512, 1165, 547, 1167, 12233564, 496, 11131731, 12182793, 771, 11164857, 679,
-  687, 9445058, 693, 694, 695, 1417, 11443919, 1428, 9697017, 868, 6902, 8391193, 9301143, 713, 1435, 709, 711, 901
+  1107, 1106, 9463058, 708, 1163, 1069, 11205145, 901, 11125512, 1165, 547, 1167, 12233564, 496, 11131731, 12182793, 771, 11164857, 679,
+  687, 9445058, 693, 694, 695, 1417, 11443919, 1428, 9697017, 868, 6902, 8391193, 9301143, 1435, 709, 711, 901
 )
 
 exclude_families <- c(
@@ -131,17 +131,17 @@ exclude_families <- c(
   6498, 3254532, 4479, 4424, 7385843, 5978, 4437, 3977, 2852, 6488, 2851, 8899, 8674, 3247675, 5765
 )
 
-exclude_genus <- c(
-  2312692, 2316452, 2312497, 2316610, 2114424, 2115369, 2269480, 2219967, 2115030, 6180409, 2406056, 10816205, 2269549, 2115338, 2114220,
+exclude_genera <- c(
+  2312692, 2316452, 2312497, 2316610, 2114424, 2115369, 2269480, 2115030, 6180409, 2406056, 10816205, 2269549, 2115338, 2114220,
   2114718, 2115124, 2115195, 7927564, 2269491, 5431531, 2234785, 7544733, 2506123, 2114333, 2307067, 2228004, 2332495, 2115284, 2269508,
   2114265, 2114807, 2114924, 2111272, 2332548, 2115460, 2114350, 2114914, 2115157, 2306892, 2114649, 2114705, 2114882, 2114837, 2227984, 
   4322151, 2115436, 2281428, 2283858, 2286678, 4407666, 9045267, 2112523, 2253224, 9204348, 2308045, 2253243, 2253037, 2308260, 2282714, 
   1007034, 8286089, 2111133, 2307934, 4807701, 2253212, 4592617, 11719099, 4807401, 2308538, 2112597, 4807841, 2283075, 2252982, 4573288, 
-  4857051, 2308495, 2308196, 2308413, 7867945, 2308058, 2252942, 2308178, 2308564, 9571446, 8276709
+  4857051, 2308495, 2308196, 2308413, 7867945, 2308058, 2252942, 2308178, 2308564, 9571446, 8276709, 2284722
 )
 
 exclude_species <- c(
-  2114445, 2114439, 2115377, 2115373, 2115371, 2115375, 2269484, 4282555, 2219970, 2115037, 2115035, 6180410, 2406057, 5233140, 4987686,
+  2114445, 2114439, 2115377, 2115373, 2115371, 2115375, 2269484, 4282555, 2115037, 2115035, 6180410, 2406057, 5233140, 4987686,
   4987684, 2234694, 2269550, 2269551, 2266609, 2115346, 2115344, 5166399, 5166402, 5166405, 2114723, 2115141, 2115138, 2115131, 2115142,
   2115128, 2115197, 2115202, 2115200, 5193700, 1028577, 1028479, 1028572, 1028559, 2269492, 2269495, 2264841, 2264478, 5717325, 2264800,
   4334397, 1028478, 5166387, 2115074, 5166468, 4333480, 2307068, 2307078, 2114329, 2332511, 2332507, 2115300, 2115324, 2115303, 2115325,
@@ -159,13 +159,13 @@ exclude_species <- c(
   12242974, 1010040, 9633156, 9479629, 2206247
 )
 
-# -------------------- US DATA FILTERS AND SAVE -------------------------
+# -------------------- WEST DATA FILTERS AND SAVE -------------------------
 
 # Read the data using fread with the correct encoding
-data_US <- fread("US_data/occurrence.txt", quote = "", encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
+data_west <- fread("west_data/occurrence.txt", quote = "", encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
 
 # Apply filtering steps
-filtered_data_US <- data_US[
+filtered_data_west <- data_west[
   occurrenceStatus == "PRESENT" &
     (!basisOfRecord %in% c("FOSSIL_SPECIMEN") | is.na(basisOfRecord)) &
     (!preparations %in% c("FOSSIL") | is.na(preparations)) &
@@ -175,17 +175,17 @@ filtered_data_US <- data_US[
     (!(classKey %in% exclude_classes) | is.na(classKey)) &
     (!(orderKey %in% exclude_orders) | is.na(orderKey)) &
     (!(familyKey %in% exclude_families) | is.na(familyKey)) &
-    (!(genusKey %in% exclude_genus) | is.na(genusKey)) &
+    (!(genusKey %in% exclude_genera) | is.na(genusKey)) &
     (!(speciesKey %in% exclude_species) | is.na(speciesKey))
 ]
 # Save the filtered data with UTF-8 encoding
-fwrite(filtered_data_US, "filtered_data_US.txt", sep = "\t", bom = TRUE)
+fwrite(filtered_data_west, "filtered_data_west.txt", sep = "\t", bom = TRUE)
 
-# -------------------- EURASIA DATA FILTERS AND SAVE -------------------------
+# -------------------- EAST DATA FILTERS AND SAVE -------------------------
 
 # Define the file paths
-input_file <- "eurasia_data/occurrence.txt"
-output_file <- "filtered_data_eurasia.txt"
+input_file <- "east_data/occurrence.txt"
+output_file <- "filtered_data_east.txt"
 # Remove the output file if it exists to avoid appending to old data
 if (file.exists(output_file)) {
   file.remove(output_file)
@@ -221,7 +221,7 @@ repeat {
       (!(classKey %in% exclude_classes) | is.na(classKey)) &
       (!(orderKey %in% exclude_orders) | is.na(orderKey)) &
       (!(familyKey %in% exclude_families) | is.na(familyKey)) &
-      (!(genusKey %in% exclude_genus) | is.na(genusKey)) &
+      (!(genusKey %in% exclude_genera) | is.na(genusKey)) &
       (!(speciesKey %in% exclude_species) | is.na(speciesKey))
   ]
 

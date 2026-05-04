@@ -10,12 +10,13 @@ library(robis) # For downloading data from OBIS
 library(arrow) # For saving and reading Parquet files
 library(dplyr) # For data manipulation
 library(lubridate) # For date parsing and extracting years
+library(jsonlite) # For saving nested objects as JSON
 
 # Define the AphiaIDs for the phyla you want to download
 aphia_ids <- c(882, 51, 1065, 1806, 1267, 558, 146142, 1821, 1803, 799, 152391, 1276, 793, 1818, 101060, 101063, 101061, 1789, 1271) # Sipuncula is not recognized as phylum according to WoRMS # nolint
 
 # Define a WKT string for the geographic area (example: a bounding box)
-US_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 90, -14 90, -16 90, -18 90, -20 90, -22 90, -24 90, -26 90, -28 90,
+west_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 90, -14 90, -16 90, -18 90, -20 90, -22 90, -24 90, -26 90, -28 90,
 -30 90, -32 90, -34 90, -36 90, -38 90, -40 90, -42 90, -44 90, -46 90, -48 90, -50 90, -52 90, -54 90, -56 90, -58 90, -60 90, -62 90, -64 90, -66 90,
 -68 90, -70 90, -72 90, -74 90, -76 90, -78 90, -80 90, -82 90, -84 90, -86 90, -88 90, -90 90, -92 90, -94 90, -96 90, -98 90, -100 90, -102 90,
 -104 90, -106 90, -108 90, -110 90, -112 90, -114 90, -116 90, -118 90, -120 90, -122 90, -124 90, -126 90, -128 90, -130 90, -132 90, -134 90, -136 90,
@@ -47,7 +48,7 @@ US_wkt <- "POLYGON ((0 61.994641, 0 90, -2 90, -4 90, -6 90, -8 90, -10 90, -12 
 -8.54764 60.000657, -8.153931 60.003245, -7.760226 60.006292, -7.366525 60.009797, -3.75564 62.006725, -3.110429 62.003576, -2.460795 62.000845,
 -1.81116 61.998566, -1.161523 61.99674, -0.511885 61.995367, 0 61.994641))"
 
-eurasia_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1.315226 61.993826, 1.843057 61.99418, 2.492697 61.994899, 3.142335 61.996071,
+east_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1.315226 61.993826, 1.843057 61.99418, 2.492697 61.994899, 3.142335 61.996071,
 3.791972 61.997694, 4.441609 61.999771, 5.091243 62.0023, 5.731005 62.005209, 7.405854 62.081979, 8.273698 62.200394, 11.057224 63.169396, 12.112365 63.754348,
 13.506069 65.507623, 15.246571 66.519988, 14.648717 67.118063, 15.551459 67.048202, 16.55603 67.167799, 18.175375 67.649737, 20.536666 68.753852,
 25.288968 69.074687, 28.660871 68.936223, 31.054727 67.007113, 32.316293 65.758155, 34.770418 64.028925, 37.568076 63.213859, 39.681152 63.727947,
@@ -73,69 +74,93 @@ eurasia_wkt <- "POLYGON ((0 61.994641, 0.137754 61.994446, 0.787393 61.993977, 1
 40 90, 38 90, 36 90, 34 90, 32 90, 30 90, 28 90, 26 90, 24 90, 22 90, 20 90, 18 90, 16 90, 14 90, 12 90, 10 90, 8 90, 6 90, 4 90, 2 90, 0 90, 0 61.994641))"
 
 
-# ---------------------- Download US ---------------------
+# ---------------------- Download west ---------------------
 
-# Download occurrences for US wkt
-occurrences_US <- occurrence(
+# Download datasets for west wkt
+dataset_west <- dataset(
   taxonid = aphia_ids,
-  geometry = US_wkt,
+  geometry = west_wkt,
+)
+
+# Save the west dataset as JSON so nested metadata is preserved.
+write_json(dataset_west, "dataset_west.json", pretty = TRUE, auto_unbox = TRUE)
+
+# Download occurrences for west wkt
+occurrences_west <- occurrence(
+  taxonid = aphia_ids,
+  geometry = west_wkt,
   mof = TRUE
 )
 
-cat("US Occurrence data downloaded:", nrow(occurrences_US), "records\n")
-str(occurrences_US)
+cat("west Occurrence data downloaded:", nrow(occurrences_west), "records\n")
+str(occurrences_west)
 
 # Flatten the MoF data
-mof_US <- unnest_extension(
-  occurrences_US,
+mof_west <- unnest_extension(
+  occurrences_west,
   "MeasurementOrFact",
   fields = c("id", "eventID")
 )
 
 # Save the mof data
-write_parquet(mof_US, "mof_US.parquet")
+write_parquet(mof_west, "mof_west.parquet")
 
 # Remove nested mof column from occurrences to be able to save as parquet
-occurrences_US_nomof <- occurrences_US %>%
+occurrences_west_nomof <- occurrences_west %>%
   select(-mof) # Remove the 'mof' column
 
 # Double check structure
-str(occurrences_US_nomof)
+str(occurrences_west_nomof)
 
 # Save the occurrences data
-write_parquet(occurrences_US_nomof, "occurrences_US.parquet")
+write_parquet(occurrences_west_nomof, "occurrences_west.parquet")
 
-# ------------------- Download Eurasia -------------------
+records_before_west <- nrow(occurrences_west_nomof)
+cat("Number of records before filtering:", records_before_west, "\n")
 
-# Download occurrences for Eurasia wkt
-occurrences_eurasia <- occurrence(
+# ------------------- Download east -------------------
+
+# Download datasets for east wkt
+dataset_east <- dataset(
   taxonid = aphia_ids,
-  geometry = eurasia_wkt,
+  geometry = east_wkt,
+)
+
+# Save the east dataset as JSON so nested metadata is preserved.
+write_json(dataset_east, "dataset_east.json", pretty = TRUE, auto_unbox = TRUE)
+
+# Download occurrences for east wkt
+occurrences_east <- occurrence(
+  taxonid = aphia_ids,
+  geometry = east_wkt,
   mof = TRUE
 )
 
-cat("Eurasia occurrence data downloaded:", nrow(occurrences_eurasia), "records\n")
-str(occurrences_eurasia)
+cat("east occurrence data downloaded:", nrow(occurrences_east), "records\n")
+str(occurrences_east)
 
 # Flatten the MoF data
-mof_eurasia <- unnest_extension(
-  occurrences_eurasia,
+mof_east <- unnest_extension(
+  occurrences_east,
   "MeasurementOrFact",
   fields = c("id", "eventID")
 )
 
 # Save the mof data
-write_parquet(mof_eurasia, "mof_eurasia.parquet")
+write_parquet(mof_east, "mof_east.parquet")
 
 # Remove nested mof column from occurrences to be able to save as parquet
-occurrences_eurasia_nomof <- occurrences_eurasia %>%
+occurrences_east_nomof <- occurrences_east %>%
   select(-mof) # Remove the 'mof' column
 
 # Double check structure
-str(occurrences_eurasia_nomof)
+str(occurrences_east_nomof)
 
 # Save the occurrences data
-write_parquet(occurrences_eurasia_nomof, "occurrences_eurasia.parquet")
+write_parquet(occurrences_east_nomof, "occurrences_east.parquet")
+
+records_before_east <- nrow(occurrences_east_nomof)
+cat("Number of records before filtering:", records_before_east, "\n")
 
 # //////////////////////////////// OCCURRENCE WORKFLOW /////////////////////////////////
 
@@ -150,10 +175,10 @@ excluded_classes <- c(
 
 excluded_orders <- c(
   196109, 1490567, 2689, 10305, 10313, 10329, 11014, 10331, 10211, 325345, 325345, 103353, 447, 10304, 17931, 10309, 10326, 16349,
-  10295, 177531, 10306, 10297, 154206, 154156, 342486, 10308, 148390, 10316, 1600607, 10294, 160002, 11730, 10322, 1600798, 10327,
+  10295, 177531, 10306, 10297, 154206, 154156, 10308, 148390, 10316, 1600607, 10294, 160002, 11730, 10322, 1600798, 10327,
   10321, 10919, 10288, 10310, 10320, 767376, 10296, 10314, 10332, 991168, 154219, 397228, 151811, 120239, 154217, 151956, 1600606,
-  10323, 10315, 833292, 154157, 22621, 10317, 152241, 833022, 123096, 833089, 154244, 10319, 154571, 1600603, 10318, 484684, 715608,
-  10201, 1374984, 1100, 1101, 345938, 22597, 1106, 22598, 22605, 1035042, 1104, 325345, 325345, 1128, 153726, 845456, 160326, 851649, 
+  10323, 10315, 833292, 154157, 10317, 152241, 833022, 123096, 833089, 154244, 10319, 154571, 1600603, 10318, 484684, 715608,
+  10201, 1374984, 1100, 1101, 345938, 22597, 1106, 22598, 22605, 1035042, 1104, 325345, 325345, 1128, 153726, 845456, 160326, 
   1370, 16350, 135225, 123096
 )
 
@@ -164,16 +189,16 @@ excluded_families <- c(
 )
 
 excluded_genera <- c(
-  129715, 129329, 206129, 129722, 104108, 104111, 117212, 101749, 104137, 458856, 458856, 125815, 125815, 1434994, 117107, 104115,
+  129715, 129329, 206129, 129722, 104108, 104111, 117212, 104137, 458856, 458856, 125815, 125815, 1434994, 117107, 104115,
   104193, 104159, 104116, 104117, 127533, 117216, 101602, 148370, 135361, 122429, 104174, 105399, 110673, 103358, 104121, 117111,
   104183, 104190, 104164, 115341, 103367, 104201, 196874, 104165, 104126, 105410, 104228, 104229, 104236, 104149, 110679, 128691, 
   104204, 458856, 125815, 227368, 1296320, 181554, 575798, 955416, 149909, 342551, 1040034, 137356, 342556, 342562, 1062020, 153384, 
   468526, 1590744, 150155, 160018, 422842, 342573, 833124, 1590943, 422845, 137388, 347529, 769713, 227271, 342605, 422869, 1372207, 
-  176320, 157596, 475530, 1255793, 137359, 342614, 137360, 994225, 157599, 827473
+  176320, 157596, 475530, 1255793, 137359, 342614, 137360, 994225, 157599, 827473, 395102
 )
 
 excluded_species <- c(
-  104251, 104257, 104267, 254600, 104270, 104272, 117849, 157611, 103086, 104372, 104375, 265150, 127766, 127767, 148379, 117615,
+  104251, 104257, 104267, 254600, 104270, 104272, 117849, 157611, 104372, 104375, 265150, 127766, 127767, 148379, 117615,
   117616, 117333, 146735, 104283, 104464, 104465, 104467, 104496, 104284, 104287, 346271, 350046, 346272, 104290, 104292, 346278,
   139178, 146852, 150191, 183084, 183086, 285347, 117855, 135414, 135301, 102553, 135418, 346375, 127782, 149756, 104396, 196775,
   220851, 105414, 105416, 254621, 103375, 266042, 346483, 254602, 237965, 104316, 104321, 196593, 104422, 346520, 104578, 104579,
@@ -190,15 +215,15 @@ excluded_species <- c(
   1765892, 423638, 1406479, 1642842, 156389, 423752, 1040983, 264152
 )
 
-# ------------------- Filter US based on taxa ------------------------------
+# ------------------- Filter west based on taxa ------------------------------
 
 # Step 1: Load the OBIS dataset
-obis_data_US <- read_parquet("occurrences_US.parquet")
+obis_data_west <- read_parquet("occurrences_west.parquet")
 # Step 2: Count the number of records before filtering
-records_before_US <- nrow(obis_data_US)
-cat("Number of records before filtering:", records_before_US, "\n")
+records_before_west <- nrow(obis_data_west)
+cat("Number of records before filtering:", records_before_west, "\n")
 # Step 3: Apply filters to exclude the specified taxa
-filtered_obis_data_US <- obis_data_US %>%
+filtered_obis_data_west <- obis_data_west %>%
   filter(
     !(classid %in% excluded_classes) & # Exclude specified classes
       !(orderid %in% excluded_orders) & # Exclude specified orders
@@ -207,20 +232,20 @@ filtered_obis_data_US <- obis_data_US %>%
       !(speciesid %in% excluded_species) # Exclude specified species
   )
 # Step 4: Count the number of records after filtering
-records_after_US <- nrow(filtered_obis_data_US)
-cat("Number of records after filtering:", records_after_US, "\n")
+records_after_west <- nrow(filtered_obis_data_west)
+cat("Number of records after filtering:", records_after_west, "\n")
 # Step 5: Save the filtered dataset
-write_parquet(filtered_obis_data_US, "filtered_occurrences_US.parquet")
+write_parquet(filtered_obis_data_west, "filtered_occurrences_west.parquet")
 
-# ------------------- Filter Eurasia based on taxa ------------------------------
+# ------------------- Filter east based on taxa ------------------------------
 
 # Step 1: Load the OBIS dataset
-obis_data_eurasia <- read_parquet("occurrences_eurasia.parquet")
+obis_data_east <- read_parquet("occurrences_east.parquet")
 # Step 2: Count the number of records before filtering
-records_before_eurasia <- nrow(obis_data_eurasia)
-cat("Number of records before filtering:", records_before_eurasia, "\n")
+records_before_east <- nrow(obis_data_east)
+cat("Number of records before filtering:", records_before_east, "\n")
 # Step 3: Apply filters to exclude the specified taxa
-filtered_obis_data_eurasia <- obis_data_eurasia %>%
+filtered_obis_data_east <- obis_data_east %>%
   filter(
     !(classid %in% excluded_classes) & # Exclude specified classes
       !(orderid %in% excluded_orders) & # Exclude specified orders
@@ -229,29 +254,29 @@ filtered_obis_data_eurasia <- obis_data_eurasia %>%
       !(speciesid %in% excluded_species) # Exclude specified species
   )
 # Step 4: Count the number of records after filtering
-records_after_eurasia <- nrow(filtered_obis_data_eurasia)
-cat("Number of records after filtering:", records_after_eurasia, "\n")
+records_after_east <- nrow(filtered_obis_data_east)
+cat("Number of records after filtering:", records_after_east, "\n")
 # Step 5: Save the filtered dataset
-write_parquet(filtered_obis_data_eurasia, "filtered_occurrences_eurasia.parquet")
+write_parquet(filtered_obis_data_east, "filtered_occurrences_east.parquet")
 
-# ------------------- Filter US based on GBIF stations ------------------------------
+# ------------------- Filter west based on GBIF stations ------------------------------
 
 # Step 1: Load the OBIS data
-obis_data_US <- read_parquet("filtered_occurrences_US.parquet")
+obis_data_west <- read_parquet("filtered_occurrences_west.parquet")
 # Step 2: Load the GBIF stations (stations_GBIF.csv)
 gbif_data <- read.csv("../GBIF/stations_keep.csv")
 # Step 3: Ensure numeric columns and round coordinates to 4 decimal places
-obis_data_US <- obis_data_US %>%
+obis_data_west <- obis_data_west %>%
   mutate(
     decimalLatitude = as.numeric(decimalLatitude),
     decimalLongitude = as.numeric(decimalLongitude),
     eventDate = as.character(eventDate) # Ensure eventDate is a character column
   )
 # Step 4: Fix specific problematic record
-obis_data_US <- obis_data_US %>%
+obis_data_west <- obis_data_west %>%
   mutate(eventDate = ifelse(eventDate == "0196-05-29", "1996-05-29", eventDate))
 # Step 4.1: Manually fix specific entries that should all be year 2021
-obis_data_US <- obis_data_US %>%
+obis_data_west <- obis_data_west %>%
   mutate(eventDate = ifelse(eventDate %in% c(
     "11/10/2061", "11/10/2062", "11/10/2063",
     "11/10/2064", "11/10/2065", "11/10/2068",
@@ -260,7 +285,7 @@ obis_data_US <- obis_data_US %>%
   "2021", eventDate
   ))
 # Step 4.2: Manually fix specific entries that should all be 1947-1949
-obis_data_US <- obis_data_US %>%
+obis_data_west <- obis_data_west %>%
   mutate(eventDate = case_when(
     eventDate %in% c("8/23/47", "8/10/47", "7/20/47", "6/29/47", "7/11/47") ~ "1947",
     eventDate %in% c("7/10/48", "7/28/48") ~ "1948",
@@ -299,10 +324,10 @@ extract_year <- function(date_str) {
   return(NA)
 }
 # Apply the year extraction function
-obis_data_US <- obis_data_US %>%
+obis_data_west <- obis_data_west %>%
   mutate(extractedEventYear = sapply(eventDate, extract_year))
 # Step 6: Round coordinates and create unique identifiers
-obis_data_US <- obis_data_US %>%
+obis_data_west <- obis_data_west %>%
   mutate(
     roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
     roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
@@ -318,28 +343,28 @@ gbif_data <- gbif_data %>%
     unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
   )
 # Step 7: Check the number of records before filtering
-num_records_before <- nrow(obis_data_US)
+num_records_before <- nrow(obis_data_west)
 cat("Number of records in OBIS data before filtering:", num_records_before, "\n")
 # Step 8: Filter out duplicates from OBIS based on GBIF stations
-filtered_obis_data_US <- obis_data_US %>%
+filtered_obis_data_west <- obis_data_west %>%
   filter(!unique_id %in% gbif_data$unique_id)
 # Step 9: Check the number of records after filtering
-num_records_after <- nrow(filtered_obis_data_US)
+num_records_after <- nrow(filtered_obis_data_west)
 cat("Number of records in OBIS data after filtering:", num_records_after, "\n")
 num_filtered <- num_records_before - num_records_after
 cat("Number of records filtered out:", num_filtered, "\n")
 # Step 10: Save the filtered OBIS data back to a Parquet file
-write_parquet(filtered_obis_data_US, "filtered_notgbif_US.parquet")
+write_parquet(filtered_obis_data_west, "filtered_notgbif_west.parquet")
 
 
-# ---------------- Filter Eurasia based on GBIF stations ------------------------------
+# ---------------- Filter east based on GBIF stations ------------------------------
 
 # Step 1: Load the OBIS data
-obis_data_eurasia <- read_parquet("filtered_occurrences_eurasia.parquet")
+obis_data_east <- read_parquet("filtered_occurrences_east.parquet")
 # Step 2: Load the GBIF stations (stations_GBIF.csv)
 gbif_data <- read.csv("../GBIF/stations_keep.csv")
 # Step 3: Ensure numeric columns and round coordinates to 4 decimal places
-obis_data_eurasia <- obis_data_eurasia %>%
+obis_data_east <- obis_data_east %>%
   mutate(
     decimalLatitude = as.numeric(decimalLatitude),
     decimalLongitude = as.numeric(decimalLongitude),
@@ -377,11 +402,11 @@ extract_year <- function(date_str) {
   return(NA)
 }
 # Apply the year extraction function
-obis_data_eurasia <- obis_data_eurasia %>%
+obis_data_east <- obis_data_east %>%
   mutate(extractedEventYear = sapply(eventDate, extract_year))
 
 # Step 5: Round coordinates and create unique identifiers
-obis_data_eurasia <- obis_data_eurasia %>%
+obis_data_east <- obis_data_east %>%
   mutate(
     roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
     roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
@@ -397,37 +422,37 @@ gbif_data <- gbif_data %>%
     unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
   )
 # Step 6: Check the number of records before filtering
-num_records_before <- nrow(obis_data_eurasia)
+num_records_before <- nrow(obis_data_east)
 cat("Number of records in OBIS data before filtering:", num_records_before, "\n")
 # Step 7: Filter out duplicates from OBIS based on GBIF stations
-filtered_obis_data_eurasia <- obis_data_eurasia %>%
+filtered_obis_data_east <- obis_data_east %>%
   filter(!unique_id %in% gbif_data$unique_id)
 # Step 8: Check the number of records after filtering
-num_records_after <- nrow(filtered_obis_data_eurasia)
+num_records_after <- nrow(filtered_obis_data_east)
 cat("Number of records in OBIS data after filtering:", num_records_after, "\n")
 # Step 9: Calculate the number of filtered records
 num_filtered <- num_records_before - num_records_after
 cat("Number of records filtered out:", num_filtered, "\n")
 # Step 10: Save the filtered OBIS data back to a Parquet file
-write_parquet(filtered_obis_data_eurasia, "filtered_notgbif_eurasia.parquet")
+write_parquet(filtered_obis_data_east, "filtered_notgbif_east.parquet")
 
 # ---------------- Check columns and merge to one parquet file ------------------------------
 
 # Load the datasets
-notgbif_US <- read_parquet("filtered_notgbif_US.parquet")
-notgbif_eurasia <- read_parquet("filtered_notgbif_eurasia.parquet")
+notgbif_west <- read_parquet("filtered_notgbif_west.parquet")
+notgbif_east <- read_parquet("filtered_notgbif_east.parquet")
 # Check the columns in each dataset
-cat("Columns in filtered_notgbif_US:\n")
-print(colnames(notgbif_US))
-cat("\nColumns in filtered_notgbif_eurasia:\n")
-print(colnames(notgbif_eurasia))
+cat("Columns in filtered_notgbif_west:\n")
+print(colnames(notgbif_west))
+cat("\nColumns in filtered_notgbif_east:\n")
+print(colnames(notgbif_east))
 # Get all unique column names from both datasets
-all_columns <- union(colnames(notgbif_US), colnames(notgbif_eurasia))
+all_columns <- union(colnames(notgbif_west), colnames(notgbif_east))
 # Add missing columns to each dataset
-notgbif_US[setdiff(all_columns, colnames(notgbif_US))] <- NA
-notgbif_eurasia[setdiff(all_columns, colnames(notgbif_eurasia))] <- NA
+notgbif_west[setdiff(all_columns, colnames(notgbif_west))] <- NA
+notgbif_east[setdiff(all_columns, colnames(notgbif_east))] <- NA
 # Merge the datasets
-merged_data <- rbind(notgbif_US, notgbif_eurasia)
+merged_data <- rbind(notgbif_west, notgbif_east)
 # Remove duplicates based on the 'id' column
 merged_data <- merged_data %>%
   distinct(id, .keep_all = TRUE)
@@ -455,10 +480,10 @@ write_parquet(filtered_merged, "merged_filtered.parquet")
 # ---------------------- Merge datasets ---------------------------
 
 # Read the MoF Parquet files
-mof_US <- read_parquet("mof_US.parquet")
-mof_eurasia <- read_parquet("mof_eurasia.parquet")
+mof_west <- read_parquet("mof_west.parquet")
+mof_east <- read_parquet("mof_east.parquet")
 # Merge the MoF data
-mof_combined <- bind_rows(mof_US, mof_eurasia)
+mof_combined <- bind_rows(mof_west, mof_east)
 # Remove potential duplicates
 mof_combined <- mof_combined %>%
   distinct()

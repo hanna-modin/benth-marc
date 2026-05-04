@@ -59,8 +59,8 @@ Thumbs.db
 
 # Data directories with large files
 GBIF/occ_parquet_shards_*/
-GBIF/eurasia_data/
-GBIF/US_data/
+GBIF/east_data/
+GBIF/west_data/
 GEBCO/*.tif
 GEBCO/*.tiff
 
@@ -71,8 +71,8 @@ GEBCO/*.tiff
 # Do not ignore these files: 
 !excluded_taxa_with_ranks_manual.xlsx
 !taxa_need_filtering.xlsx
-!eurasia.wkt
-!US.wkt
+!east.wkt
+!west.wkt
 !merged_dataset_with_keep_column.csv
 !P_gear_edited.csv
 !gbif_taxonkey_original.csv
@@ -85,4 +85,3 @@ GEBCO/*.tiff
 !SQL_queries.txt
 !taxa_need_filtering_step_2_gbifid_manual.xlsx
 !arctic-benthic-biodiversity.code-workspace
-
