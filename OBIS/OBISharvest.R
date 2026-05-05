@@ -337,7 +337,7 @@ cat("Filtered MoF data saved to 'mof_OBIS.parquet'\n")
 dataset_east_json <- jsonlite::fromJSON("dataset_east.json")
 dataset_west_json <- jsonlite::fromJSON("dataset_west.json")
 
-selected_fields <- c("id", "url", "published", "title", "abstract", "intellectualrights")
+selected_fields <- c("id", "url", "published", "title", "abstract", "intellectualrights", "citation")
 
 dataset_east_selected <- dplyr::select(dataset_east_json, dplyr::any_of(selected_fields))
 dataset_west_selected <- dplyr::select(dataset_west_json, dplyr::any_of(selected_fields))
@@ -357,13 +357,9 @@ datasets_merged <- datasets_merged %>%
   dplyr::mutate(id = as.character(id)) %>%
   dplyr::semi_join(merged_obis_dataset_ids, by = "id")
 
-# Write merged dataset metadata to an Excel file
-if (!requireNamespace("writexl", quietly = TRUE)) {
-  stop("Package 'writexl' is required. Install it with install.packages('writexl').")
-}
-
-writexl::write_xlsx(datasets_merged, "datasets_OBIS.xlsx")
-cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'datasets_OBIS.xlsx'.\n")
+# Write merged dataset metadata to a Parquet file
+arrow::write_parquet(datasets_merged, "datasets_OBIS.parquet")
+cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'datasets_OBIS.parquet'.\n")
 
 
 
