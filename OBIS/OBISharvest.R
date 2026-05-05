@@ -259,200 +259,24 @@ cat("Number of records after filtering:", records_after_east, "\n")
 # Step 5: Save the filtered dataset
 write_parquet(filtered_obis_data_east, "filtered_occurrences_east.parquet")
 
-# ------------------- Filter west based on GBIF stations ------------------------------
-
-# Step 1: Load the OBIS data
-obis_data_west <- read_parquet("filtered_occurrences_west.parquet")
-# Step 2: Load the GBIF stations (stations_GBIF.csv)
-gbif_data <- read.csv("../GBIF/stations_keep.csv")
-# Step 3: Ensure numeric columns and round coordinates to 4 decimal places
-obis_data_west <- obis_data_west %>%
-  mutate(
-    decimalLatitude = as.numeric(decimalLatitude),
-    decimalLongitude = as.numeric(decimalLongitude),
-    eventDate = as.character(eventDate) # Ensure eventDate is a character column
-  )
-# Step 4: Fix specific problematic record
-obis_data_west <- obis_data_west %>%
-  mutate(eventDate = ifelse(eventDate == "0196-05-29", "1996-05-29", eventDate))
-# Step 4.1: Manually fix specific entries that should all be year 2021
-obis_data_west <- obis_data_west %>%
-  mutate(eventDate = ifelse(eventDate %in% c(
-    "11/10/2061", "11/10/2062", "11/10/2063",
-    "11/10/2064", "11/10/2065", "11/10/2068",
-    "11/10/2069"
-  ),
-  "2021", eventDate
-  ))
-# Step 4.2: Manually fix specific entries that should all be 1947-1949
-obis_data_west <- obis_data_west %>%
-  mutate(eventDate = case_when(
-    eventDate %in% c("8/23/47", "8/10/47", "7/20/47", "6/29/47", "7/11/47") ~ "1947",
-    eventDate %in% c("7/10/48", "7/28/48") ~ "1948",
-    eventDate %in% c("6/30/49", "8/23/49", "7/6/49", "8/3/49", "8/24/49") ~ "1949",
-    TRUE ~ eventDate # Keep all other dates unchanged
-  ))
-# Step 5: Extract year programmatically from eventDate
-extract_year <- function(date_str) {
-  # Handle MM/DD/YYYY format explicitly
-  if (grepl("\\d{1,2}/\\d{1,2}/\\d{4}", date_str)) {
-    return(as.numeric(sub(".*/.*/(\\d{4})$", "\\1", date_str))) # Extract the 4-digit year
-  }
-
-  # Handle ISO 8601 and YYYY formats
-  if (grepl("\\b\\d{4}\\b", date_str)) {
-    return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
-  }
-
-  # Handle DD.MM.YYYY format
-  if (grepl("\\d{2}\\.\\d{2}\\.\\d{4}", date_str)) {
-    return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
-  }
-
-  # Handle MM/DD/YY or DD/MM/YY format (assuming MM/DD/YY)
-  if (grepl("\\d{1,2}/\\d{1,2}/\\d{2}", date_str)) {
-    year <- as.numeric(sub(".*?/(\\d{2})$", "\\1", date_str))
-    return(ifelse(year < 50, 2000 + year, 1900 + year)) # Convert to 4-digit year
-  }
-
-  # Handle YYYY/YYYY ranges (take the first year)
-  if (grepl("\\d{4}/\\d{4}", date_str)) {
-    return(as.numeric(sub("(\\d{4})/.*", "\\1", date_str)))
-  }
-
-  # Return NA if no year could be extracted
-  return(NA)
-}
-# Apply the year extraction function
-obis_data_west <- obis_data_west %>%
-  mutate(extractedEventYear = sapply(eventDate, extract_year))
-# Step 6: Round coordinates and create unique identifiers
-obis_data_west <- obis_data_west %>%
-  mutate(
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
-    unique_id = paste(extractedEventYear, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
-  )
-gbif_data <- gbif_data %>%
-  mutate(
-    decimalLatitude = as.numeric(decimalLatitude),
-    decimalLongitude = as.numeric(decimalLongitude),
-    year = as.character(year), # Convert year to character
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
-    unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
-  )
-# Step 7: Check the number of records before filtering
-num_records_before <- nrow(obis_data_west)
-cat("Number of records in OBIS data before filtering:", num_records_before, "\n")
-# Step 8: Filter out duplicates from OBIS based on GBIF stations
-filtered_obis_data_west <- obis_data_west %>%
-  filter(!unique_id %in% gbif_data$unique_id)
-# Step 9: Check the number of records after filtering
-num_records_after <- nrow(filtered_obis_data_west)
-cat("Number of records in OBIS data after filtering:", num_records_after, "\n")
-num_filtered <- num_records_before - num_records_after
-cat("Number of records filtered out:", num_filtered, "\n")
-# Step 10: Save the filtered OBIS data back to a Parquet file
-write_parquet(filtered_obis_data_west, "filtered_notgbif_west.parquet")
-
-
-# ---------------- Filter east based on GBIF stations ------------------------------
-
-# Step 1: Load the OBIS data
-obis_data_east <- read_parquet("filtered_occurrences_east.parquet")
-# Step 2: Load the GBIF stations (stations_GBIF.csv)
-gbif_data <- read.csv("../GBIF/stations_keep.csv")
-# Step 3: Ensure numeric columns and round coordinates to 4 decimal places
-obis_data_east <- obis_data_east %>%
-  mutate(
-    decimalLatitude = as.numeric(decimalLatitude),
-    decimalLongitude = as.numeric(decimalLongitude),
-    eventDate = as.character(eventDate) # Ensure eventDate is a character column
-  )
-# Step 4: Extract year programmatically from eventDate
-extract_year <- function(date_str) {
-  # Handle MM/DD/YYYY format explicitly
-  if (grepl("\\d{1,2}/\\d{1,2}/\\d{4}", date_str)) {
-    return(as.numeric(sub(".*/.*/(\\d{4})$", "\\1", date_str))) # Extract the 4-digit year
-  }
-
-  # Handle ISO 8601 and YYYY formats
-  if (grepl("\\b\\d{4}\\b", date_str)) {
-    return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
-  }
-
-  # Handle DD.MM.YYYY format
-  if (grepl("\\d{2}\\.\\d{2}\\.\\d{4}", date_str)) {
-    return(as.numeric(sub(".*?(\\d{4}).*", "\\1", date_str)))
-  }
-
-  # Handle MM/DD/YY or DD/MM/YY format (assuming MM/DD/YY)
-  if (grepl("\\d{1,2}/\\d{1,2}/\\d{2}", date_str)) {
-    year <- as.numeric(sub(".*?/(\\d{2})$", "\\1", date_str))
-    return(ifelse(year < 50, 2000 + year, 1900 + year)) # Convert to 4-digit year
-  }
-
-  # Handle YYYY/YYYY ranges (take the first year)
-  if (grepl("\\d{4}/\\d{4}", date_str)) {
-    return(as.numeric(sub("(\\d{4})/.*", "\\1", date_str)))
-  }
-
-  # Return NA if no year could be extracted
-  return(NA)
-}
-# Apply the year extraction function
-obis_data_east <- obis_data_east %>%
-  mutate(extractedEventYear = sapply(eventDate, extract_year))
-
-# Step 5: Round coordinates and create unique identifiers
-obis_data_east <- obis_data_east %>%
-  mutate(
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
-    unique_id = paste(extractedEventYear, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
-  )
-gbif_data <- gbif_data %>%
-  mutate(
-    decimalLatitude = as.numeric(decimalLatitude),
-    decimalLongitude = as.numeric(decimalLongitude),
-    year = as.character(year), # Convert year to character
-    roundedLatitude = trimws(format(round(decimalLatitude, 4), nsmall = 4)), # Remove whitespaces
-    roundedLongitude = trimws(format(round(decimalLongitude, 4), nsmall = 4)), # Remove whitespaces
-    unique_id = paste(year, roundedLatitude, roundedLongitude, sep = "_") # Unique identifier
-  )
-# Step 6: Check the number of records before filtering
-num_records_before <- nrow(obis_data_east)
-cat("Number of records in OBIS data before filtering:", num_records_before, "\n")
-# Step 7: Filter out duplicates from OBIS based on GBIF stations
-filtered_obis_data_east <- obis_data_east %>%
-  filter(!unique_id %in% gbif_data$unique_id)
-# Step 8: Check the number of records after filtering
-num_records_after <- nrow(filtered_obis_data_east)
-cat("Number of records in OBIS data after filtering:", num_records_after, "\n")
-# Step 9: Calculate the number of filtered records
-num_filtered <- num_records_before - num_records_after
-cat("Number of records filtered out:", num_filtered, "\n")
-# Step 10: Save the filtered OBIS data back to a Parquet file
-write_parquet(filtered_obis_data_east, "filtered_notgbif_east.parquet")
 
 # ---------------- Check columns and merge to one parquet file ------------------------------
 
 # Load the datasets
-notgbif_west <- read_parquet("filtered_notgbif_west.parquet")
-notgbif_east <- read_parquet("filtered_notgbif_east.parquet")
+occurrences_west <- read_parquet("filtered_occurrences_west.parquet")
+occurrences_east <- read_parquet("filtered_occurrences_east.parquet")
 # Check the columns in each dataset
-cat("Columns in filtered_notgbif_west:\n")
-print(colnames(notgbif_west))
-cat("\nColumns in filtered_notgbif_east:\n")
-print(colnames(notgbif_east))
+cat("Columns in filtered_occurrences_west:\n")
+print(colnames(occurrences_west))
+cat("\nColumns in filtered_occurrences_east:\n")
+print(colnames(occurrences_east))
 # Get all unique column names from both datasets
-all_columns <- union(colnames(notgbif_west), colnames(notgbif_east))
+all_columns <- union(colnames(occurrences_west), colnames(occurrences_east))
 # Add missing columns to each dataset
-notgbif_west[setdiff(all_columns, colnames(notgbif_west))] <- NA
-notgbif_east[setdiff(all_columns, colnames(notgbif_east))] <- NA
+occurrences_west[setdiff(all_columns, colnames(occurrences_west))] <- NA
+occurrences_east[setdiff(all_columns, colnames(occurrences_east))] <- NA
 # Merge the datasets
-merged_data <- rbind(notgbif_west, notgbif_east)
+merged_data <- rbind(occurrences_west, occurrences_east)
 # Remove duplicates based on the 'id' column
 merged_data <- merged_data %>%
   distinct(id, .keep_all = TRUE)

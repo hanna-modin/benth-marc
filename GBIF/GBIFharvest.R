@@ -1,17 +1,18 @@
 # nolint start
 #install.packages("bit64")
 #install.packages("pak")
-#install.packages("rgbif")
-#pak::pkg_install("ropensci/rgbif") # dev version
+#install.packages("rgbif")  # Comment this out to avoid overwriting the dev version
+pak::pkg_install("ropensci/rgbif") # dev version - uncomment to install/update
 
 #install.packages("devtools")
-#devtools::install_github("ropensci/rgbif")
+#devtools::install_github("ropensci/rgbif")  # Alternative: use this instead of pak if needed
 
  
 
 setwd("C:\\Users\\hamod4691\\Code\\arctic-benthic-biodiversity\\GBIF")
 
 library(rgbif)
+packageVersion("rgbif")  # Should show 3.8.5.1
 library(dplyr)
 library(data.table)
 
@@ -162,7 +163,7 @@ exclude_species <- c(
 # -------------------- WEST DATA FILTERS AND SAVE -------------------------
 
 # Read the data using fread with the correct encoding
-data_west <- fread("west_data/occurrence.txt", quote = "", encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
+data_west <- fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/west_data/occurrence.txt", quote = "", encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
 
 # Apply filtering steps
 filtered_data_west <- data_west[
@@ -179,13 +180,13 @@ filtered_data_west <- data_west[
     (!(speciesKey %in% exclude_species) | is.na(speciesKey))
 ]
 # Save the filtered data with UTF-8 encoding
-fwrite(filtered_data_west, "filtered_data_west.txt", sep = "\t", bom = TRUE)
+fwrite(filtered_data_west, "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_west.txt", sep = "\t", bom = TRUE)
 
 # -------------------- EAST DATA FILTERS AND SAVE -------------------------
 
 # Define the file paths
-input_file <- "east_data/occurrence.txt"
-output_file <- "filtered_data_east.txt"
+input_file <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/east_data/occurrence.txt"
+output_file <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_east.txt"
 # Remove the output file if it exists to avoid appending to old data
 if (file.exists(output_file)) {
   file.remove(output_file)
