@@ -237,7 +237,7 @@ cat("Number of records after filtering:", records_after_west, "\n")
 # Step 5: Save the filtered dataset
 write_parquet(filtered_obis_data_west, "filtered_occurrences_west.parquet")
 
-# ------------------- Filter east based on taxa ------------------------------
+# ------------------- Filter east based on taxa ------------------------------ 
 
 # Step 1: Load the OBIS dataset
 obis_data_east <- read_parquet("occurrences_east.parquet")
@@ -281,8 +281,8 @@ merged_data <- rbind(occurrences_west, occurrences_east)
 merged_data <- merged_data %>%
   distinct(id, .keep_all = TRUE)
 # Save the merged dataset to a Parquet file
-write_parquet(merged_data, "merged_notgbif.parquet")
-cat("Merged dataset saved to 'merged_notgbif.parquet' with unique entries in the 'id' column.\n")
+write_parquet(merged_data, "merged_OBIS.parquet")
+cat("Merged dataset saved to 'merged_OBIS.parquet' with unique entries in the 'id' column.\n")
 
 # -------------------- Data quality filters -------------------------
 
@@ -296,7 +296,7 @@ filtered_merged <- merged_data %>%
       (!coordinateUncertaintyInMeters %in% c(301, 3036, 999, 9999) | is.na(coordinateUncertaintyInMeters))
   )
 # Save the filtered data with UTF-8 encoding
-write_parquet(filtered_merged, "merged_filtered.parquet")
+write_parquet(filtered_merged, "merged_OBIS.parquet")
 
 
 # /////////////////////// MOF WORKFLOW /////////////////////////////
@@ -312,21 +312,59 @@ mof_combined <- bind_rows(mof_west, mof_east)
 mof_combined <- mof_combined %>%
   distinct()
 # Save the combined MoF data
-write_parquet(mof_combined, "mof_combined.parquet")
-cat("Combined MoF data saved to 'mof_combined.parquet'\n")
+write_parquet(mof_combined, "mof_OBIS.parquet")
+cat("Combined MoF data saved to 'mof_OBIS.parquet'\n")
 
 # ----------- Filter based on merged occurrence file --------------
 
 # Read the combined MoF file
-mof_combined <- read_parquet("mof_combined.parquet")
+mof_combined <- read_parquet("mof_OBIS.parquet")
 # Read the filtered file
-merged_filtered <- read_parquet("merged_filtered.parquet")
+merged_filtered <- read_parquet("merged_OBIS.parquet")
 # Filter the MoF data to keep only matching `id` values
 filtered_mof <- mof_combined %>%
   filter(id %in% merged_filtered$id)
 # Save the filtered MoF data
-write_parquet(filtered_mof, "filtered_mof_combined.parquet")
-cat("Filtered MoF data saved to 'filtered_mof_combined.parquet'\n")
+write_parquet(filtered_mof, "mof_OBIS.parquet")
+cat("Filtered MoF data saved to 'mof_OBIS.parquet'\n")
+
+
+# /////////////////////// DATASET WORKFLOW /////////////////////////////
+
+# ---------------------- Merge datasets ---------------------------
+
+# Read and extract selected fields from both dataset JSON files
+dataset_east_json <- jsonlite::fromJSON("dataset_east.json")
+dataset_west_json <- jsonlite::fromJSON("dataset_west.json")
+
+selected_fields <- c("id", "url", "published", "title", "abstract", "intellectualrights")
+
+dataset_east_selected <- dplyr::select(dataset_east_json, dplyr::any_of(selected_fields))
+dataset_west_selected <- dplyr::select(dataset_west_json, dplyr::any_of(selected_fields))
+
+# Merge east and west datasets, then remove duplicate dataset IDs
+datasets_merged <- dplyr::bind_rows(dataset_east_selected, dataset_west_selected) %>%
+  dplyr::distinct(id, .keep_all = TRUE)
+
+# Keep only entries where id exists in merged_OBIS.parquet
+merged_obis_dataset_ids <- read_parquet("merged_OBIS.parquet") %>%
+  dplyr::select(dataset_id) %>%
+  dplyr::distinct() %>%
+  dplyr::mutate(dataset_id = as.character(dataset_id)) %>%
+  dplyr::rename(id = dataset_id)
+
+datasets_merged <- datasets_merged %>%
+  dplyr::mutate(id = as.character(id)) %>%
+  dplyr::semi_join(merged_obis_dataset_ids, by = "id")
+
+# Write merged dataset metadata to an Excel file
+if (!requireNamespace("writexl", quietly = TRUE)) {
+  stop("Package 'writexl' is required. Install it with install.packages('writexl').")
+}
+
+writexl::write_xlsx(datasets_merged, "datasets_OBIS.xlsx")
+cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'datasets_OBIS.xlsx'.\n")
+
+
 
 # nolint end
-

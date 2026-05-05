@@ -237,6 +237,336 @@ repeat {
   # Print progress
   cat("Processed chunk", chunk_number, "\n")
 }
+}
 cat("Processing complete. Filtered data saved to", output_file, "\n")
+
+#//////////////////////////// MERGE FILTERED GBIF DATA INTO PARQUET ////////////////////////////
+
+# Install/load arrow package for parquet
+if (!requireNamespace("arrow", quietly = TRUE)) {
+  install.packages("arrow")
+}
+library(arrow)
+
+# Read both filtered data files
+cat("Merging filtered GBIF data into parquet...\n")
+merged_gbif <- rbind(
+  fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_east.txt", encoding = "Latin-1"),
+  fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_west.txt", encoding = "Latin-1")
+)
+
+cat("Total rows after merging:", nrow(merged_gbif), "\n")
+
+# Save as parquet file
+merged_parquet_path <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/merged_GBIF.parquet"
+write_parquet(merged_gbif, merged_parquet_path)
+cat("Saved merged GBIF data to:", merged_parquet_path, "\n")
+
+#//////////////////////////// EXTRACT DATASET INFORMATION FOR EAST ////////////////////////////
+
+# Install/load required packages
+if (!requireNamespace("xml2", quietly = TRUE)) {
+  install.packages("xml2")
+}
+if (!requireNamespace("writexl", quietly = TRUE)) {
+  install.packages("writexl")
+}
+
+library(xml2)
+library(writexl)
+library(dplyr)
+
+# Define the directory containing XML files
+xml_dir <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/east_data/dataset"
+
+# Get list of all XML files
+xml_files <- list.files(xml_dir, pattern = "\\.xml$", full.names = TRUE)
+
+cat("Found", length(xml_files), "XML files to process\n")
+
+# Initialize an empty list to store extracted data
+datasets_list <- list()
+
+# Function to safely extract text from XML nodes
+extract_text <- function(node, xpath, ns = NULL) {
+  result <- tryCatch({
+    nodes <- xml_find_all(node, xpath, ns = ns)
+    if (length(nodes) == 0) {
+      return(NA_character_)
+    }
+    text_values <- xml_text(nodes)
+    # Return as comma-separated if multiple values
+    paste(text_values, collapse = "; ")
+  }, error = function(e) {
+    return(NA_character_)
+  })
+  return(result)
+}
+
+# Function to extract UUID-format alternateIdentifier
+extract_uuid_identifier <- function(node, ns = NULL) {
+  tryCatch({
+    alt_ids <- xml_find_all(node, ".//d1:alternateIdentifier", ns = ns)
+    if (length(alt_ids) == 0) {
+      # Try without namespace
+      alt_ids <- xml_find_all(node, ".//alternateIdentifier")
+    }
+    
+    for (alt_id in alt_ids) {
+      text <- xml_text(alt_id)
+      # Check if matches UUID pattern
+      if (grepl("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", text, ignore.case = TRUE)) {
+        return(text)
+      }
+    }
+    return(NA_character_)
+  }, error = function(e) {
+    return(NA_character_)
+  })
+}
+
+# Loop through each XML file and extract data
+for (i in seq_along(xml_files)) {
+  tryCatch({
+    cat("Processing file", i, "of", length(xml_files), "\r")
+    
+    # Read XML file
+    xml_doc <- read_xml(xml_files[i])
+    
+    # Define namespace
+    ns <- c(d1 = "https://eml.ecoinformatics.org/eml-2.2.0",
+            xsi = "http://www.w3.org/2001/XMLSchema-instance")
+    
+    # Extract title
+    title <- extract_text(xml_doc, ".//d1:title", ns = ns)
+    if (is.na(title)) {
+      title <- extract_text(xml_doc, ".//title")
+    }
+    
+    # Extract abstract
+    abstract <- extract_text(xml_doc, ".//d1:abstract/d1:para", ns = ns)
+    if (is.na(abstract)) {
+      abstract <- extract_text(xml_doc, ".//abstract/para")
+    }
+    
+    # Extract intellectualRights
+    intellectual_rights <- extract_text(xml_doc, ".//d1:intellectualRights/d1:para", ns = ns)
+    if (is.na(intellectual_rights)) {
+      intellectual_rights <- extract_text(xml_doc, ".//intellectualRights/para")
+    }
+    
+    # Extract URL (get first online URL)
+    url <- extract_text(xml_doc, ".//d1:distribution/d1:online/d1:url[1]", ns = ns)
+    if (is.na(url)) {
+      url <- extract_text(xml_doc, ".//distribution/online/url[1]")
+    }
+    
+    # Extract citation (if exists)
+    citation <- extract_text(xml_doc, ".//d1:citation", ns = ns)
+    if (is.na(citation)) {
+      citation <- extract_text(xml_doc, ".//citation")
+    }
+    
+    # Extract alternateIdentifier (UUID format)
+    alternate_id <- extract_uuid_identifier(xml_doc, ns = ns)
+    
+    # Extract pubDate
+    pub_date <- extract_text(xml_doc, ".//d1:pubDate", ns = ns)
+    if (is.na(pub_date)) {
+      pub_date <- extract_text(xml_doc, ".//pubDate")
+    }
+    
+    # Extract licenseName
+    license_name <- extract_text(xml_doc, ".//d1:licensed/d1:licenseName", ns = ns)
+    if (is.na(license_name)) {
+      license_name <- extract_text(xml_doc, ".//licensed/licenseName")
+    }
+    
+    # Add to list
+    datasets_list[[i]] <- data.frame(
+      title = title,
+      abstract = abstract,
+      intellectualRights = intellectual_rights,
+      url = url,
+      citation = citation,
+      alternateIdentifier = alternate_id,
+      pubDate = pub_date,
+      licenseName = license_name,
+      stringsAsFactors = FALSE
+    )
+    
+  }, error = function(e) {
+    cat("Error processing file:", xml_files[i], "Error:", conditionMessage(e), "\n")
+  })
+}
+
+cat("\n")
+
+# Combine all data into a single data frame
+if (length(datasets_list) > 0) {
+  datasets_df <- bind_rows(datasets_list)
+  
+  # Remove rows where all fields are NA
+  datasets_df <- datasets_df %>%
+    filter(!if_all(everything(), is.na))
+  
+  # Save to Parquet file (no Excel cell character limit issues)
+  output_path <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/east_data_metadata.parquet"
+  arrow::write_parquet(datasets_df, output_path)
+  
+  cat("Extracted metadata from", nrow(datasets_df), "datasets\n")
+  cat("Saved to:", output_path, "\n")
+} else {
+  cat("No data extracted from XML files\n")
+}
+
+
+#//////////////////////////// EXTRACT DATASET INFORMATION FOR WEST ////////////////////////////
+
+# Define the directory containing XML files
+xml_dir_west <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/west_data/dataset"
+
+# Get list of all XML files
+xml_files_west <- list.files(xml_dir_west, pattern = "\\.xml$", full.names = TRUE)
+
+cat("Found", length(xml_files_west), "XML files to process in west_data\n")
+
+# Initialize an empty list to store extracted data
+datasets_list_west <- list()
+
+# Loop through each XML file and extract data
+for (i in seq_along(xml_files_west)) {
+  tryCatch({
+    cat("Processing file", i, "of", length(xml_files_west), "\r")
+    
+    # Read XML file
+    xml_doc <- read_xml(xml_files_west[i])
+    
+    # Define namespace
+    ns <- c(d1 = "https://eml.ecoinformatics.org/eml-2.2.0",
+            xsi = "http://www.w3.org/2001/XMLSchema-instance")
+    
+    # Extract title
+    title <- extract_text(xml_doc, ".//d1:title", ns = ns)
+    if (is.na(title)) {
+      title <- extract_text(xml_doc, ".//title")
+    }
+    
+    # Extract abstract
+    abstract <- extract_text(xml_doc, ".//d1:abstract/d1:para", ns = ns)
+    if (is.na(abstract)) {
+      abstract <- extract_text(xml_doc, ".//abstract/para")
+    }
+    
+    # Extract intellectualRights
+    intellectual_rights <- extract_text(xml_doc, ".//d1:intellectualRights/d1:para", ns = ns)
+    if (is.na(intellectual_rights)) {
+      intellectual_rights <- extract_text(xml_doc, ".//intellectualRights/para")
+    }
+    
+    # Extract URL (get first online URL)
+    url <- extract_text(xml_doc, ".//d1:distribution/d1:online/d1:url[1]", ns = ns)
+    if (is.na(url)) {
+      url <- extract_text(xml_doc, ".//distribution/online/url[1]")
+    }
+    
+    # Extract citation (if exists)
+    citation <- extract_text(xml_doc, ".//d1:citation", ns = ns)
+    if (is.na(citation)) {
+      citation <- extract_text(xml_doc, ".//citation")
+    }
+    
+    # Extract alternateIdentifier (UUID format)
+    alternate_id <- extract_uuid_identifier(xml_doc, ns = ns)
+    
+    # Extract pubDate
+    pub_date <- extract_text(xml_doc, ".//d1:pubDate", ns = ns)
+    if (is.na(pub_date)) {
+      pub_date <- extract_text(xml_doc, ".//pubDate")
+    }
+    
+    # Extract licenseName
+    license_name <- extract_text(xml_doc, ".//d1:licensed/d1:licenseName", ns = ns)
+    if (is.na(license_name)) {
+      license_name <- extract_text(xml_doc, ".//licensed/licenseName")
+    }
+    
+    # Add to list
+    datasets_list_west[[i]] <- data.frame(
+      title = title,
+      abstract = abstract,
+      intellectualRights = intellectual_rights,
+      url = url,
+      citation = citation,
+      alternateIdentifier = alternate_id,
+      pubDate = pub_date,
+      licenseName = license_name,
+      stringsAsFactors = FALSE
+    )
+    
+  }, error = function(e) {
+    cat("Error processing file:", xml_files_west[i], "Error:", conditionMessage(e), "\n")
+  })
+}
+
+cat("\n")
+
+# Combine all data into a single data frame
+if (length(datasets_list_west) > 0) {
+  datasets_df_west <- bind_rows(datasets_list_west)
+  
+  # Remove rows where all fields are NA
+  datasets_df_west <- datasets_df_west %>%
+    filter(!if_all(everything(), is.na))
+  
+  # Save to Parquet file (no Excel cell character limit issues)
+  output_path_west <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/west_data_metadata.parquet"
+  arrow::write_parquet(datasets_df_west, output_path_west)
+  
+  cat("Extracted metadata from", nrow(datasets_df_west), "datasets\n")
+  cat("Saved to:", output_path_west, "\n")
+} else {
+  cat("No data extracted from XML files\n")
+}
+
+#//////////////////////////// FILTER METADATA BY OCCURRENCE DATA AND MERGE ////////////////////////////
+
+# Read the merged filtered occurrence data from parquet
+merged_gbif_data <- read_parquet("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/merged_GBIF.parquet") %>%
+  select(datasetKey) %>%
+  distinct()
+
+# Get unique datasetKey values
+unique_datasets <- unique(merged_gbif_data$datasetKey)
+
+cat("Found", length(unique_datasets), "unique datasets in merged occurrence data\n")
+
+# Read the metadata Parquet files
+east_metadata <- read_parquet("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/east_data_metadata.parquet")
+west_metadata <- read_parquet("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/west_data_metadata.parquet")
+
+cat("East metadata has", nrow(east_metadata), "entries\n")
+cat("West metadata has", nrow(west_metadata), "entries\n")
+
+# Merge the two metadata files first
+merged_metadata <- bind_rows(east_metadata, west_metadata)
+
+# Filter merged metadata to keep only entries with UUIDs that exist in the occurrence data
+merged_metadata <- merged_metadata %>%
+  filter(!is.na(alternateIdentifier) & alternateIdentifier %in% unique_datasets)
+
+cat("Merged metadata filtered to", nrow(merged_metadata), "entries\n")
+
+# Remove duplicate UUIDs (keep first occurrence)
+merged_metadata <- merged_metadata %>%
+  distinct(alternateIdentifier, .keep_all = TRUE)
+
+cat("Merged metadata has", nrow(merged_metadata), "unique entries\n")
+
+# Save the merged and filtered metadata to Parquet
+output_merged <- "C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/datasets_GBIF.parquet"
+arrow::write_parquet(merged_metadata, output_merged)
+
+cat("Saved merged and filtered metadata to:", output_merged, "\n")
 
 # nolint end
