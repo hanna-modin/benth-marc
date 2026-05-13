@@ -1,5 +1,7 @@
 library(rgbif)
 library(worrms)
+library(arrow)
+library(stats)
 
 `%||%` <- function(x, y) {
 	if (is.null(x) || length(x) == 0) y else x
@@ -87,3 +89,50 @@ resolve_aphiaid_column <- function(input_csv, taxon_key_column = "taxonKey", out
 
 # Example:
 # resolve_aphiaid_column("your_file.csv", taxon_key_column = "taxonKey")
+
+resolve_aphiaid_parquet <- function(parquet_path = "GBIF/gbif_final.parquet",
+																		taxon_key_col = "sourceID",
+																		aphia_col = "aphiaID",
+																		output_path = NULL) {
+	if (!file.exists(parquet_path)) {
+		stop(paste0("Parquet file not found: ", parquet_path))
+	}
+
+	df <- arrow::read_parquet(parquet_path)
+	if (!taxon_key_col %in% names(df)) {
+		stop(paste0("Column not found: ", taxon_key_col))
+	}
+
+	unique_keys <- unique(df[[taxon_key_col]])
+	unique_keys <- unique_keys[!is.na(unique_keys)]
+	if (length(unique_keys) == 0) {
+		message("No non-missing taxon keys found in column: ", taxon_key_col)
+		if (is.null(output_path)) output_path <- parquet_path
+		arrow::write_parquet(df, output_path)
+		return(list(df = df, empty_count = sum(is.na(df[[aphia_col]]))))
+	}
+
+	# Resolve AphiaIDs for unique taxon keys
+	results_list <- lapply(unique_keys, function(k) {
+		res <- resolve_aphiaid_from_taxonkey(k)
+		data.frame(taxonKey = k, AphiaID = res$AphiaID, stringsAsFactors = FALSE)
+	})
+	mapping <- do.call(rbind, results_list)
+	# Ensure unique mapping
+	mapping <- mapping[!duplicated(mapping$taxonKey), , drop = FALSE]
+
+	# Create a named vector for fast lookup
+	map_vec <- setNames(mapping$AphiaID, as.character(mapping$taxonKey))
+
+	# Assign aphia column (preserve existing columns and order)
+	df[[aphia_col]] <- as.integer(map_vec[as.character(df[[taxon_key_col]])])
+
+	if (is.null(output_path)) output_path <- parquet_path
+	arrow::write_parquet(df, output_path)
+
+	empty_count <- sum(is.na(df[[aphia_col]]))
+	message("Wrote: ", output_path)
+	message("Empty/NA rows in ", aphia_col, ": ", empty_count)
+
+	invisible(list(df = df, empty_count = empty_count))
+}
