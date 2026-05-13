@@ -112,11 +112,20 @@ resolve_aphiaid_parquet <- function(parquet_path = "GBIF/gbif_final.parquet",
 		return(list(df = df, empty_count = sum(is.na(df[[aphia_col]]))))
 	}
 
-	# Resolve AphiaIDs for unique taxon keys
-	results_list <- lapply(unique_keys, function(k) {
+	# Resolve AphiaIDs for unique taxon keys (with simple progress logging)
+	n_keys <- length(unique_keys)
+	results_list <- vector("list", n_keys)
+	start_time <- Sys.time()
+	for (i in seq_along(unique_keys)) {
+		k <- unique_keys[[i]]
+		if (i == 1 || i %% 50 == 0 || i == n_keys) {
+			message(sprintf("Resolving %d/%d (taxonKey=%s)", i, n_keys, k))
+		}
 		res <- resolve_aphiaid_from_taxonkey(k)
-		data.frame(taxonKey = k, AphiaID = res$AphiaID, stringsAsFactors = FALSE)
-	})
+		results_list[[i]] <- data.frame(taxonKey = k, AphiaID = res$AphiaID, stringsAsFactors = FALSE)
+	}
+	elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+	message(sprintf("Resolved %d unique keys in %.1f seconds", n_keys, elapsed))
 	mapping <- do.call(rbind, results_list)
 	# Ensure unique mapping
 	mapping <- mapping[!duplicated(mapping$taxonKey), , drop = FALSE]
@@ -136,3 +145,13 @@ resolve_aphiaid_parquet <- function(parquet_path = "GBIF/gbif_final.parquet",
 
 	invisible(list(df = df, empty_count = empty_count))
 }
+
+if (sys.nframe() == 0) {
+	args <- commandArgs(trailingOnly = TRUE)
+	parquet_path <- if (length(args) >= 1 && nzchar(args[1])) args[1] else "GBIF/gbif_final.parquet"
+	message("Running AphiaID update for: ", parquet_path)
+	result <- resolve_aphiaid_parquet(parquet_path)
+	cat("EMPTY_COUNT:", result$empty_count, "\n")
+}
+
+
