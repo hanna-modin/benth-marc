@@ -91,7 +91,7 @@ resolve_aphiaid_column <- function(input_csv, taxon_key_column = "taxonKey", out
 # resolve_aphiaid_column("your_file.csv", taxon_key_column = "taxonKey")
 
 resolve_aphiaid_parquet <- function(parquet_path = "GBIF/gbif_final.parquet",
-																		taxon_key_col = "sourceID",
+								taxon_key_col = "acceptedTaxonKey",
 																		aphia_col = "aphiaID",
 																		output_path = NULL) {
 	if (!file.exists(parquet_path)) {
