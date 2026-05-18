@@ -85,4 +85,5 @@ GEBCO/*.tiff
 !SQL_queries.txt
 !taxa_need_filtering_step_2_gbifid_manual.xlsx
 !arctic-benthic-biodiversity.code-workspace
-!datasets_GBIF_OBIS_filtered_with_keep_manual.xlsx
+!datasets_GBIF_OBIS_manual.xlsx
+!column_data_types.xlsx
