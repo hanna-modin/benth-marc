@@ -88,3 +88,4 @@ GEBCO/*.tiff
 !datasets_GBIF_OBIS_manual.xlsx
 !column_data_types.xlsx
 !validated_nomenclature.xlsx
+!accepted_names_missing_aphiaID_manual.xlsx
