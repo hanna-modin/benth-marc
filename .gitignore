@@ -87,6 +87,7 @@ GEBCO/*.tiff
 !arctic-benthic-biodiversity.code-workspace
 !datasets_GBIF_OBIS_manual.xlsx
 !column_data_types.xlsx
-!validated_nomenclature.xlsx
+!validated_nomenclature_manual.xlsx
 !gbif_missing_aphiaID_manual.xlsx
 !functional_groups.xlsx
+!validated_nomenclature_manual_filtered.xlsx
