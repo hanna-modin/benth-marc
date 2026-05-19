@@ -91,3 +91,4 @@ GEBCO/*.tiff
 !gbif_missing_aphiaID_manual.xlsx
 !functional_groups.xlsx
 !validated_nomenclature_manual_filtered.xlsx
+!validated_nomenclature_final.xlsx
