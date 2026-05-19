@@ -89,3 +89,4 @@ GEBCO/*.tiff
 !column_data_types.xlsx
 !validated_nomenclature.xlsx
 !accepted_names_missing_aphiaID_manual.xlsx
+!functional_groups.xlsx
