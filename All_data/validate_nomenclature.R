@@ -5,7 +5,7 @@ library(writexl)
 setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/All_data")
 
 # Read the CSV and extract the numeric AphiaID vector
-df <- read_csv("unique_aphiaIDs.csv", show_col_types = FALSE)
+df <- read_csv("valid_aphiaID.csv", show_col_types = FALSE)
 
 ids <- unique(df$aphiaID)
 ids <- as.integer(ids)
@@ -13,8 +13,8 @@ ids <- ids[!is.na(ids)]
 
 # batching + caching parameters
 chunk_size <- 50L
-cache_file <- "validated_nomenclature_cache.rds"
-output_csv <- "validated_nomenclature.csv"
+cache_file <- "validated_nomenclature_cache2.rds"
+output_csv <- "validated_nomenclature2.csv"
 
 # load existing cache (a named list saved as RDS) into an environment
 cache_env <- list2env(if (file.exists(cache_file)) readRDS(cache_file) else list(), parent = emptyenv())
@@ -91,5 +91,5 @@ results <- do.call(rbind, out_rows)
 results$AphiaID <- suppressWarnings(as.integer(as.character(results$AphiaID)))
 write.csv(results, output_csv, row.names = FALSE)
 message("Wrote ", nrow(results), " rows to ", output_csv)
-write_xlsx(results, "validated_nomenclature.xlsx")
+write_xlsx(results, "validated_nomenclature2.xlsx")
 
