@@ -1,5 +1,6 @@
 library(worrms)
 library(readr)
+library(writexl)
 
 setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/All_data")
 
@@ -90,5 +91,5 @@ results <- do.call(rbind, out_rows)
 results$AphiaID <- suppressWarnings(as.integer(as.character(results$AphiaID)))
 write.csv(results, output_csv, row.names = FALSE)
 message("Wrote ", nrow(results), " rows to ", output_csv)
-write.xlsx(results, "validated_nomenclature.xlsx", rowNames = FALSE)
+write_xlsx(results, "validated_nomenclature.xlsx")
 
