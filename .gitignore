@@ -94,3 +94,4 @@ GEBCO/*.tiff
 !validated_nomenclature_final.xlsx
 !final_nomenclature.xlsx
 !unique_stations_filter.csv
+!gear_types_manual.xlsx
