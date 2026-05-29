@@ -162,8 +162,8 @@ exclude_species <- c(
 
 # -------------------- WEST DATA FILTERS AND SAVE -------------------------
 
-# Read the data using fread with the correct encoding
-data_west <- fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/west_data/occurrence.txt", quote = "", encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
+# Read the data using fread with the source UTF-8 encoding
+data_west <- fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/west_data/occurrence.txt", quote = "", encoding = "UTF-8")
 
 # Apply filtering steps
 filtered_data_west <- data_west[
@@ -193,8 +193,8 @@ if (file.exists(output_file)) {
 }
 # Define chunk size
 chunk_size <- 1e6 # 1 million rows per chunk
-# Read the header (column names) separately with the correct encoding
-header <- fread(input_file, nrows = 0, encoding = "Latin-1") # ISO-8859-1 is equivalent to Latin-1
+# Read the header (column names) separately with the source UTF-8 encoding
+header <- fread(input_file, nrows = 0, encoding = "UTF-8")
 column_names <- names(header) # Store column names
 # Initialize variables
 skip <- 0 # Number of rows to skip
@@ -202,8 +202,8 @@ chunk_number <- 1
 append <- FALSE # Append mode for fwrite
 # Loop through the file in chunks
 repeat {
-  # Read a chunk of data with the correct encoding
-  chunk <- fread(input_file, nrows = chunk_size, skip = skip, header = FALSE, quote = "", encoding = "Latin-1")
+  # Read a chunk of data with the source UTF-8 encoding
+  chunk <- fread(input_file, nrows = chunk_size, skip = skip, header = FALSE, quote = "", encoding = "UTF-8")
 
   # Break the loop if the chunk is empty (end of file)
   if (nrow(chunk) == 0) break
@@ -251,8 +251,8 @@ library(arrow)
 # Read both filtered data files
 cat("Merging filtered GBIF data into parquet...\n")
 merged_gbif <- rbind(
-  fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_east.txt", encoding = "Latin-1"),
-  fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_west.txt", encoding = "Latin-1")
+  fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_east.txt", encoding = "UTF-8"),
+  fread("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/GBIF/filtered_data_west.txt", encoding = "UTF-8")
 )
 
 cat("Total rows after merging:", nrow(merged_gbif), "\n")
