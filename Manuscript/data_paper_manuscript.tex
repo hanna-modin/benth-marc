@@ -1,0 +1,1038 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Georeferenced zoobenthic biodiversity data from the marine Arctic},
+  pdfauthor={Hanna Modin; Jannik Schnier; Jennifer Dannheim; Paul Renaud; Raul Primicerio; Mikael Sejr; Camille Poitrimol; Cindy Grant; Lisa Treau De Coeli; Philippe Archambault; Bodil Bluhm},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Georeferenced zoobenthic biodiversity data from the marine
+Arctic}
+\author{Hanna Modin \and Jannik Schnier \and Jennifer Dannheim \and Paul
+Renaud \and Raul Primicerio \and Mikael Sejr \and Camille
+Poitrimol \and Cindy Grant \and Lisa Treau De Coeli \and Philippe
+Archambault \and Bodil Bluhm}
+\date{2026-03-12}
+\begin{document}
+\maketitle
+
+
+\emph{Abstract}
+
+As the Arctic Ocean undergoes rapid environmental change and is
+subjected to increasing anthropogenic pressures, there is a growing need
+for comprehensive baseline data on its biodiversity. Although sampling
+efforts have been considerable over the past decades, the existing
+biodiversity records are often fragmented and scattered across multiple
+databases. We present BENTH-MARC, an open pan-Arctic database with
+BENTHos in the Marine ARCtic. BENTH-MARC contains 2,365,237
+georeferenced taxon records of 11,902 taxa from 819 datasets and 220,802
+stations. Data span across the entire pan-Arctic realm and integrate
+regional and global biodiversity databases as well as unpublished
+datasets. The records in BENTH-MARC come from two and a half centuries
+of sampling, from 1677-2026, and are based on morphological
+identification. By providing harmonized and accessible data, BENTH-MARC
+can support the assessment of biological consequences of ongoing
+environmental change, aid in the identification of biodiversity hotspots
+and evaluation of conservation targets. The database can also be used to
+guide future sampling efforts.
+
+\section{Background \& Summary}\label{background-summary}
+
+The Arctic Ocean is experiencing rapid environmental changes and an
+increase in anthropogenic pressures\textsuperscript{1,2}, which is in
+part linked to better accessibility as the sea ice
+withdraws\textsuperscript{3}. The demand on Arctic resources is expected
+to increase in the future, with growing interests in, among others,
+deep-sea mining, oil and gas extraction, shipping and tourism in the
+region\textsuperscript{2}. Currently, there are knowledge gaps on how
+large-scale biodiversity patterns will respond to these rapid
+environmental changes and elevated anthropogenic
+pressures\textsuperscript{4}. Sampling efforts in the Arctic Ocean have
+been considerable over the past decades\textsuperscript{5}, and data
+accessibility has increased due to improved storage options and the
+growing prevalence of mandatory data publication\textsuperscript{6}.
+Nevertheless, existing biodiversity records are often insufficient,
+fragmented, and scattered across multiple databases\textsuperscript{7}.
+This creates considerable uncertainties and poses challenges for the
+sustainable management of the Arctic Ocean.
+
+Benthic communities play a vital role in Arctic marine food webs,
+nutrient recycling, and the carbon cycle\textsuperscript{8}, while also
+harboring the majority of marine biodiversity\textsuperscript{9}.
+Furthermore, benthic organisms are widely regarded as key indicators of
+ecosystem health due to the strong coupling between environmental
+drivers and species distribution patterns\textsuperscript{10,11}, as
+well as their comparatively long lifespans. As a result, studies
+investigating the impacts of environmentally hazardous activities, such
+as oil and gas extraction\textsuperscript{12,13} or infrastructure
+development\textsuperscript{14}, often rely on benthic communities in
+impact assessments. Understanding the current baseline of benthic
+biodiversity is therefore critical --- not only for identifying present
+biodiversity hotspots but also for predicting the future state of the
+Arctic Ocean and for supporting sustainable development of
+environmentally hazardous activities. However, sampling zoobenthos in
+the Arctic Ocean presents significant challenges, including high costs,
+logistical difficulties, and limited accessibility. These challenges are
+particularly pronounced in deep-water areas, where research efforts
+remain scarce. Most studies to date have concentrated on sea ice,
+surface waters, and the water column, leaving substantial gaps in our
+understanding of deep benthic environments\textsuperscript{5,15}. To
+ensure that future sampling efforts target the areas of greatest need,
+it is essential to create an overview of the availability, structure,
+and coverage of existing data and metadata. Additionally, facilitating
+reuse of already existing data helps maximize the value of each sampling
+campaign.
+
+Previous large-scale compilations of Arctic benthic biodiversity include
+the works of Bluhm \emph{et al.}\textsuperscript{15} and Ramirez Llodra
+\emph{et al.}\textsuperscript{5} on the Arctic basins, a taxon
+compilation by Sirenko \emph{et al.}\textsuperscript{9} on the Russian
+Arctic Seas, an inventory of Arctic shelf seas by Piepenburg \emph{et
+al.}\textsuperscript{16}, and a pan-Arctic overview of both shelves and
+basins by Piepenburg \emph{et al.}\textsuperscript{17}.
+
+In a time of global change and competing sea-use interests, large-scale
+analyses at high taxonomic resolution are key for informing effective
+science-based decision-making. Such analyses can be facilitated and
+improved by access to harmonized biodiversity and biomass data. Here, we
+present BENTH-MARC, an open pan-Arctic database with a focus on BENTHos
+in the Marine ARCtic. BENTH-MARC includes 2,365,237 zoobenthic records
+from the Global Biodiversity Information Facility
+(GBIF)\textsuperscript{18}, Ocean Biodiversity Information System
+(OBIS)\textsuperscript{19}, CRITTERBASE\textsuperscript{20},
+Observatoire Global du Saint-Laurent (OGSL)\textsuperscript{21} and
+\emph{unpublished datasets}. Each record represents an observation of a
+certain taxon at a specific location and time. This means that for
+example 200 individuals of the same taxon, location and date count as a
+single record. The records span over the Arctic Large Marine
+Ecosystems\textsuperscript{22} and date back to as early as 1677. The
+records have been cleaned and harmonized and are now available for
+download in different formats. By providing harmonized and accessible
+data, BENTH-MARC can support the assessment of biological consequences
+of ongoing environmental change and can be used to guide future sampling
+efforts.
+
+\section{Methods}\label{methods}
+
+\subsection{Definition of the study
+area}\label{definition-of-the-study-area}
+
+The main study area consists of 18 Arctic Large Marine Ecosystems
+(LMEs), which are regions of ocean space of 200,000
+km\textsuperscript{2} or greater that have unifying qualities in terms
+of productivity, bathymetry, hydrography and trophically linked
+populations\textsuperscript{23}. The Arctic LMEs were originally
+developed by the Arctic Council working group Protection of the Arctic
+Marine Environment (PAME) in 2006 and updated with revised boundaries in
+2013\textsuperscript{22}. Using ecosystem-based units supports the
+application of an ecosystem approach to management, which has been
+promoted within the EU Marine Strategy Framework Directive and OSPAR
+contexts\textsuperscript{23}. Figure~\ref{fig-map_stations} provides an
+overview of all sampling stations as well as the spatial extent of the
+Arctic Large Marine Ecosystems.
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-map_stations-output-1.png}}
+
+}
+
+\caption{\label{fig-map_stations}Spatial distribution of sampling
+stations in the BENTH-MARC database. The Arctic Large Marine Ecosystems
+(purple lines) define the main study area. The Large Marine Ecosystems
+are Labrador Sea (LS), Hudson Bay (HB), Baffin Bay (BB), Beaufort Sea
+(BeS), Chukchi Sea (CS), West Bering Sea (WBS), East Bering Sea (EBS),
+Aleutian Islands (AI), East Siberian Sea (ESS), Laptev Sea (LS), Kara
+Sea (KS), Barents Sea (BaS), Norwegian Sea (NS), Iceland (I), Faroe
+Plateau (FP), Greenland Sea (GS), North Canadian Archipelago (NCA) and
+Central Arctic Ocean (CAO).}
+
+\end{figure}%
+
+\subsection{Data sources}\label{data-sources}
+
+BENTH-MARC includes publicly available, and soon-to-be publicly
+available, georeferenced and morphologically identified metazoan
+datasets of meio-, macro- and megabenthos in the Arctic LMEs
+(Figure~\ref{fig-map_stations}). Only invertebrates were included, more
+specifically from the following phyla: Annelida, Mollusca, Arthropoda,
+Echinodermata, Cnidaria, Porifera, Sipuncula, Bryozoa, Chordata,
+Brachiopoda, Nematoda, Nemertea, Tardigrada, Platyhelminthes,
+Hemichordata, Kinorhyncha, Priapulida, Loricifera, Phoronida and
+Entoprocta. Data were extracted from GBIF and OBIS on 2026-05-05. The
+records were downloaded using the R packages rGBIF\textsuperscript{24}
+and robis\textsuperscript{25}, which offer programmatic access to the
+application programming interface (API) of GBIF and OBIS. To access
+associated metadata and information, complementary downloads targeted
+the related Extended Measurement or Fact (eMoF) extensions. The
+citations of the OBIS and GBIF derived datasets can be found at
+(\emph{link needs to be created}) and (\emph{link needs to be created}).
+Data from CRITTERBASE were downloaded through Alfred Wegener's
+Institute's dedicated web portal on 2026-02-06. Data from OGSL \emph{and
+unpublished data from Aarhus University} were retrieved through personal
+communication\textsuperscript{26}.
+
+\subsection{Data cleaning}\label{data-cleaning}
+
+The main value of BENTH-MARC lies in the rigorous data cleaning process.
+The total number of records were at the time of download 56,102,941,
+which has been reduced to 2,365,237. This corresponds to a reduction of
+95.8\% of the original records.
+
+Extensive data cleaning has been necessary as the downloads of all
+records in the abovementioned phyla from GBIF and OBIS led to an
+inclusion of a considerable number of pelagic, terrestrial, limnic and
+extinct taxa. These taxa were at a first stage filtered out using a
+comprehensive taxonomic filter at the levels of class, order, family,
+genus and species (Table S1, Supplementary material). As GBIF and OBIS
+use different taxonomic backbones, the taxonomic filter was tailored to
+correspond with the respective data source. The remaining taxa were
+matched to their functional group as assigned by the World Registry of
+Marine Species (WoRMS)\textsuperscript{27}, which provides information
+about whether the taxa can be considered benthic or pelagic. The taxa
+were also matched to their respective environment through WoRMS, which
+classifies all taxa as marine, brackish, fresh or
+terrestrial\textsuperscript{27}. Furthermore, information about the
+taxon's status as extant or extinct was retrieved through WoRMS. These
+steps enabled a further elimination of any irrelevant taxa that remained
+after the first taxonomic filter. WoRMS has 80\% coverage in terms of
+functional group\textsuperscript{28} and 100\% coverage in terms of
+environment for accepted, extant, marine species\textsuperscript{27}.
+Whenever a taxon lacked funcitonal groups information, it was inferred
+from a higher taxonomic level. Only records belonging to extant marine
+and brackish benthic taxa were kept for further processing. All
+information about functional groups, environment and status as extant or
+extinct was accessed through the R package worrms\textsuperscript{29}.
+
+All records belonging to datasets with molecular-, telemetry- or
+acoustic-based identification or with a main focus on zooplankton, fish
+or sympagic taxa were removed. Citizen-science datasets without
+expert-level quality control were deleted. Records sampled with
+typically pelagic gear such as plankton net and continuous plankton
+recorder were excluded and fossil specimens were filtered out. Our
+filters also targeted the georeferencing quality, removing all records
+with coordinate uncertainty of \textgreater0.01 degrees or
+\textgreater10,000 meters. Records with the known default uncertainty
+values 301, 3036, 999, and 9999 were removed, as they typically have a
+higher uncertainty than stated by the given value. This was done in
+accordance with GBIF recommendations\textsuperscript{30}. All records
+denoting absence were excluded.
+
+Representations of coastlines in polar regions are known to be
+associated with larger errors than in other regions, as a consequence of
+more dynamic processes, projection distortions, and high coastal
+complexity. This limits the applicability of mapped coastlines for
+filtering out records that have mistakes in their coordinates and where
+the stations appear on land. At the same time, the prevalence of
+fjord-rich landscapes with drastic changes in elevation mean that the
+available bathymetry layers do not offer high enough spatial resolution
+to be suitable as a basis for filtering. We therefore manually removed
+stations that are clearly on land instead of using a programmatic
+approach, but did not remove ambiguous cases close to the coastlines.
+
+CRITTERBASE, GBIF and OBIS have considerable data overlap, but the
+databases often hold varying degrees of associated information such as
+abundance, biomass and gear type for the same records. The same is also
+true for within-database duplicates, as two datasets in GBIF or OBIS can
+contain varying degrees of associated information for the same record.
+To preserve as much of the desired information as possible, selected
+columns were keyed in from the eMoF files prior to the deduplication
+process. The deduplication then targeted records with less associated
+information, preserving records with information about the area sampled,
+biomass, gear type, depth, and count. The deduplication itself was
+carried out in two steps. The first round, based on coordinates, full
+date and Aphia ID (unique and persistent identifiers assigned to each
+taxon and used in WoRMS), had a removal rate of nearly 40\%. Around 18\%
+of the records have incomplete date information and the deduplication
+was therefore complemented with a second round, based on coordinates,
+year, Aphia ID and dataset title, with a removal rate of 1\%.
+
+\subsection{Data compilation}\label{data-compilation}
+
+We carried out a data harmonization process to enable a merge between
+records from OBIS, GBIF, CRITTERBASE and OGSL. This included creating a
+controlled glossary and collecting associated information with labels
+such as samplingProtocol, Gear and Sampling device in one column. As a
+general rule, Darwin Core terms have been preferred.
+
+As previously mentioned, GBIF uses its own taxonomic backbone and
+therefore does not include Aphia IDs. Instead, Aphia IDs were retrieved
+for all taxa in the GBIF subset through the r package
+worrms\textsuperscript{29}, using the first match and manually
+processing taxa where no match could be found. As a rule of thumb, the
+Aphia ID of a higher taxonomic level was manually assigned to taxa when
+no match could be found at the given level. OBIS, CRITTERBASE and OGSL
+datasets already had AphiaIDs assigned to each taxon. To ensure that the
+records were updated against the latest taxonomic information available
+on WoRMS, all records from all sources were stripped of all taxonomic
+information, including scientific name, rank, classification and taxon
+status, apart from AphiaID. The taxonomic information was then harvested
+anew from WoRMS using worrms\textsuperscript{29}, to ensure that all
+taxonomic information is up-to-date and has been retrieved on the same
+date for all taxa. Also here, the Aphia ID of a higher taxonomic level
+was manually assigned to taxa when no match could be found at the given
+level.
+
+\section{Data records}\label{data-records}
+
+The data is available as two separate files; one Parquet file with all
+occurrence records in a long format, and one CSV file with dataset-level
+metadata. The column datasetKey links these two files. Parquet is a
+column-oriented data storage format that facilitates efficient data
+processing and retrieval of big data. Unlike row-based formats like CSV,
+Parquet organizes data by columns, which allows for better compression
+and faster analytical queries of big datasets\textsuperscript{31}.
+Although there are no strict upper limits to how much data you can store
+in a CSV file, analyzing large CSV files requires significantly more
+processing power than Parquet files. To accommodate users who cannot
+access the data in Parquet format, the occurrence records are also
+available as one CSV file per LME.
+
+All files are available on Zenodo (insert URL).
+
+\section{Data overview}\label{data-overview}
+
+The records in BENTH-MARC represent two and a half centuries of
+sampling, spanning from 1677 to 2026. In total, there are 220,802
+stations with 2,365,237 georeferenced taxon records of 11,902 taxa from
+819 datasets. Stations are defined as unique combinations of dataset
+name, coordinates and year. Each record is the observation of a certain
+taxon at a specific location and time, and can have associated
+information about the number of individuals per area and/or biomass. The
+total number of taxa is here equivalent to the total number of unique
+AphiaIDs in the database, although some AphiaIDs represent other
+taxonomic levels than species. As the same taxon may have been
+identified at different taxonomic resolutions at different stations, the
+total number of taxa is an overestimation of the total number of
+species. Figure~\ref{fig-tax_resolution} shows the taxonomic resolution
+of the records. The majority of the records (72\%) were identified to
+species level, followed by genus (14\%) and family level (5\%).
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-tax_resolution-output-1.png}}
+
+}
+
+\caption{\label{fig-tax_resolution}Taxonomic resolution of all records
+of benthic invertebrates in the BENTH-MARC data collection. The bars
+show records per rank from phylum to species.}
+
+\end{figure}%
+
+Figure~\ref{fig-top10phyla} shows an overview of the top ten most
+records-rich phyla in BENTH-MARC. The number of records can be compared
+to the number of unique taxa per phylum. Annelida is by far the phylum
+with the highest number of records, with a share of 42\% of the total
+number of records. However, the highest number of unique taxa can be
+found within the phylum Arthropoda, even though it only has 18\% of the
+total number of records. The phylum Bryozoa stands out in terms of
+having the highest taxa to records ratio.
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-top10phyla-output-1.png}}
+
+}
+
+\caption{\label{fig-top10phyla}The number of records (left side) and
+taxa (right side)of the ten most records-rich phyla of benthic
+invertebrates in the BENTH-MARC database. The proportion of
+species-level data is indicated in teal and by numbers in the bar plot,
+while grey indicates data on other taxonomic levels.}
+
+\end{figure}%
+
+The records in BENTH-MARC have varying degrees of associated information
+about biomass, occurrence metrics and sampling gear
+(Figure~\ref{fig-panelmap} a-c). We have considered only records with
+information about both number of individuals and sampling area to be
+true abundance records, as no standardization methods can be applied on
+records where only one of these is known. Stations with full biomass
+coverage and abundance data are mainly located in the Barents Sea, the
+Norwegian Sea, Chukchi Sea and Laptev Sea. In terms of the number of
+records, 10.8\% have biomass data and 10.4\% have abundance data. Since
+stations can have a combination of records with and without biomass
+coverage as well as a combination of records with different types of
+occurrence metrics, the categories partial (biomass coverage) and mixed
+(occurrence metrics) are displayed in the maps
+(Figure~\ref{fig-panelmap} a-b). In addition, 77.9\% of the records have
+associated information about sampling gear (Figure~\ref{fig-panelmap}
+c).
+
+The vast majority of stations have low numbers of records
+(Figure~\ref{fig-panelmap} d), with 84\% having fewer than ten records
+per station, and 90\% having fewer than 28 records per station. The
+lowest number of records per station is one and the highest number is
+237.
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/cell-26-output-1.png}}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-panelmap-output-1.png}}
+
+}
+
+\caption{\label{fig-panelmap}Benthic invertebrates in BENTH-MARC by a)
+biomass coverage, b) occurrence metrics and c) gear information across
+stations and records, as well as d) number of unique taxa per station.
+In 4 d), stations with higher numbers of taxa are drawn on top of
+stations with lower numbers of taxa.}
+
+\end{figure}%
+
+\section{Technical validation}\label{technical-validation}
+
+With more than two million records in the database, manual validation of
+all records has not been feasible. An effort has been made to exclude
+stations that have high coordinate uncertainty or that appear on land,
+as described above (see `Data cleaning'). An important step in the
+creation of the database is the application of taxonomic filters to
+separate benthos from irrelevant taxa, such as terrestrial, extinct and
+pelagic. The taxonomic filters have been validated with WoRMS'
+functional groups\textsuperscript{28} to ensure their accuracy. Only
+non-benthic taxa were kept in the taxonomic filters and the taxa that
+could not be validated using WoRMS' functional groups were validated
+manually. The nomenclature, taxonomic status, rank and classification of
+all taxa in BENTH-MARC have been validated using WoRMS. Duplicated
+records were removed, and erroneous year entries have been corrected.
+
+In BENTH-MARC, we have not intended to set a high bar for the
+requirement of metadata. The intention was to collect publicly available
+records of Arctic metazoan benthos in one database, and it is up to
+every user to decide which types of records that are applicable in their
+work.
+
+\section{Usage notes}\label{usage-notes}
+
+The data in BENTH-MARC come with certain qualities that need to be
+accounted for when applying the data on larger-scale analyses. While
+Figure~\ref{fig-panelmap} can help inform the user on the suitable
+selection of data for a certain scope, there is also an inherent
+patchiness in the data that the user needs to be aware of. As with any
+biodiversity data, the data are unevenly distributed over regions,
+habitat types and depths and the sampling focus has shifted over time.
+These characteristics are described below. Furthermore, the varying
+levels of taxonomic resolution in the data can lead to a need for
+normalizing the records prior to making comparisons
+(Figure~\ref{fig-tax_resolution}).
+
+While the spatial distribution of stations across Arctic LMEs can be
+seen in Figure~\ref{fig-map_stations}, Figure~\ref{fig-lme} shows an
+overview of the number of records and taxa per LME. Sampling effort in
+terms of number of records varies considerably between LMEs, with 80.3\%
+of the total number of available records having been collected in the
+two most well-sampled LMEs; the Norwegian Sea and Barents Sea. The
+availability of public records is significantly lower in the remaining
+LMEs, and the five most records-poor LMEs East Siberian Sea, Northern
+Canadian Archipelago, Faroe Plateau, West Bering Sea, and Iceland
+contribute with merely 0.9\% of the total number of records. In terms of
+available records, the Norwegian Sea is the most well-sampled LME, while
+Barents Sea has higher numbers of unique taxa. Iceland stands out in
+terms of having a low number of records but a disproportionally high
+number of taxa.
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-lme-output-1.png}}
+
+}
+
+\caption{\label{fig-lme}Number of records (left side) and taxa (right
+side) of benthic invertebrates in the BENTH-MARC database per Arctic
+Large Marine Ecosystem. The proportion of species-level data is
+indicated in teal and by numbers in the bar plot, while grey indicates
+data on other taxonomic levels.}
+
+\end{figure}%
+
+Similarly, sampling effort and the availability of records varies
+considerably over geomorphological features on a pan-Arctic scale. In
+Figure~\ref{fig-geo}, the global geomorphological features mapped by
+Harris \emph{et al.}\textsuperscript{32} have been merged into a coarser
+set of categories to visualize the distribution of sampling effort in
+terms of number of records as well as the number of taxa per category.
+The deep and medium shelves are considerably more well-sampled than
+other areas (Figure~\ref{fig-geo}), reflecting the high sampling effort
+in Barents Sea and the Norwegian Sea that could also be seen in
+Figure~\ref{fig-lme}. The Norwegian Sea and Barents Sea are bordered by
+innumerous fjords and the Barents Sea has numerous troughs that are deep
+enough to be categorized as medium and deep shelf.
+
+The shelves are most easily accessible and the deep, medium and shallow
+shelf have together received a staggering 86\% of the overall sampling
+effort in terms of number of records sampled. At the other end of the
+spectrum, the hadal zones together with abyssal plains, mountains and
+hills have collectively only received 1\% of the total sampling effort.
+Due to near-shore locations that fall outside the coverage of the
+shapefiles provided by Harris \emph{et al.}\textsuperscript{32}, 4\% of
+the records are categorized as Outside geomorphological categories.
+
+The proportional relationship between the number of records and the
+number of taxa (taxa-to-records ratio) changes with sampling pressure
+and depth. Wherever the ratio is one to one, the category contributes
+taxa in line with its share of records. At lower ratios, the category
+contributes fewer unique taxa than would be expected. The lowest
+taxa-to-records ratio is found at the deep shelf (0.5), and the ratio
+generally gradually increases as the number of records decreases and the
+depth increases, with abyssal plains and hadal zones having the highest
+ratio at 12.4. There are a few exceptions to the depth-related pattern,
+such as the shallow and medium shelf having fewer records and a higher
+ratio than the deep shelf, and ridges having fewer records and a lower
+ratio than the abyssal mountains and hills. The deeper areas are
+generally less well-sampled and each sample from these areas therefore
+has a higher probability of encountering taxa that had not been
+previously recorded in the area. The ratios indicate that the low
+numbers of unique taxa in the deep areas are a consequence of low
+sampling effort rather than a true representation of the actual
+biodiversity in these areas, and that the deep areas are likely to be
+considerably more taxon-rich than current data suggest.
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/cell-37-output-1.png}}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-geo-output-1.png}}
+
+}
+
+\caption{\label{fig-geo}a) Number of records and taxa of benthic
+invertebrates in the BENTH-MARC database per geomorphological category.
+Figure 6: b) A visual representation of the geomorphological categories,
+simplified from Harris \emph{et al.}\textsuperscript{32}.}
+
+\end{figure}%
+
+Visualizing the distribution of records over depth provides an even
+clearer picture of the decreasing sampling effort with depth. The vast
+majority of sampling has occurred at shallow depths
+(Figure~\ref{fig-depth}), with 50\% of the records being sampled at a
+depth of less than 207 meters, and only 32\% being sampled at a depth
+greater than 300 meters. Approximately 97\% of the records come from
+sampling conducted in the top 1000 meters.
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-depth-output-1.png}}
+
+}
+
+\caption{\label{fig-depth}Number of records of benthic invertebrates
+over depth range in the BENTH-MARC database. Note the different scales
+in the split x axis.}
+
+\end{figure}%
+
+The data in BENTH-MARC span back all the way to the 1700s, but only 1\%
+of the records originate from before the 20th century
+(Figure~\ref{fig-time}). The vast majority of the data are recent, with
+85\% of the records being sampled after year 2000. Apart from the
+increasing number of records over time, there also appears to have been
+a shift in focus from sampling only one or a few taxonomic groups at a
+time to more community-oriented sampling. Figure~\ref{fig-time} a) shows
+the development over time from almost exclusively single-phylum stations
+to a clear downward trend in single-phylum stations since around year
+2000. The relative increase over the previous three years might be
+related to a time lag in the identification of taxa in more
+comprehensive, community-based studies. The overall reduction in
+single-phylum stations can be interpreted as a shift in research focus
+from taxonomy to ecology. Together, the limited availability of historic
+data and the shift in study focus limit the applicability of the data in
+long-term comparisons. There are however examples of long-term
+comparisons in the literature that have successfully used publicly
+available data to compare species distributions over time, such as
+Calvin et al.~2024\textsuperscript{33}.
+
+Figure~\ref{fig-time} b) shows the six most common phyla among
+single-phylum stations. Cnidaria, Porifera, Arthropoda, Mollusca and
+Echinodermata have been the focus at more than 10,000 stations each,
+whereas Annelida has been the focus of fewer targeted studies.
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/cell-44-output-1.png}}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{data_paper_manuscript_files/figure-pdf/fig-time-output-1.png}}
+
+}
+
+\caption{\label{fig-time}a) The number of records of benthic
+invertebrates in the BENTH-MARC database over time and the proportion of
+single-phylum stations per year, indicating a shift in sampling focus
+from single-phylum stations to communities. Figure 8: b) The phyla that
+have most commonly been the focus of single-phylum stations.}
+
+\end{figure}%
+
+\section{Data availability}\label{data-availability}
+
+All data described in this paper can be accessed as Parquet or CSV files
+on Zenodo website. Usage licence is under Creative Commons Attribution
+4.0 International (CC-BY-4.0).
+
+\section{Code availability}\label{code-availability}
+
+The R and Python code that was used to create the database BENTH-MARC
+and to generate figures 1-8 can be found in the GitHub repository
+arctic-benthic-biodiverity\textsuperscript{34}.
+
+\section{Author contributions}\label{author-contributions}
+
+The first authorship is shared between H.M. and J.S., who performed the
+majority of the data curation. In addition, J.D. also contributed with
+data curation. M.S., C.P., C.G., L.T.D.C., and P.A. contributed with
+unpublished datasets. H.M., B.B., J.D., P.R., R.P., and M.S. developed
+the conceptual design of the paper. H.M. wrote the manuscript draft and
+all other authors contributed with manuscript revisions.
+
+\section{Competing interests}\label{competing-interests}
+
+No competing interests are declared for this work.
+
+\section{Funding}\label{funding}
+
+This work was funded by the Horizon Europe project POMP - Polar Ocean
+Mitigation Potential (grant agreement 101136875). The POMP project has
+been approved under HORIZON-CL6-2023-CLIMATE-01-3: Ocean and coastal
+waters carbon- and biodiversity-rich ecosystems and habitats in Europe
+and the Polar Regions.
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-overland2019}
+\CSLLeftMargin{1. }%
+\CSLRightInline{Overland, J. \emph{et al.}
+\href{https://doi.org/10.1016/j.polar.2018.11.008}{The urgency of arctic
+change}. \emph{Polar Science} \textbf{21}, 6--13 (2019).}
+
+\bibitem[\citeproctext]{ref-bidgood2024}
+\CSLLeftMargin{2. }%
+\CSLRightInline{Bidgood, A. K. \& Hall, J.
+\href{https://doi.org/doi:10.3389/esss.2024.10117}{We need to talk about
+mining in the arctic}. \emph{Earth Science, Systems and Society}
+\textbf{4}, 10117 (2024).}
+
+\bibitem[\citeproctext]{ref-pame2025}
+\CSLLeftMargin{3. }%
+\CSLRightInline{PAME. \emph{The Increase in Arctic Shipping: 2013-2024}.
+\url{https://hdl.handle.net/11374/2733.3} (2025).}
+
+\bibitem[\citeproctext]{ref-brandt2023}
+\CSLLeftMargin{4. }%
+\CSLRightInline{Brandt, S., Wassmann, P. \& Piepenburg, D.
+\href{https://doi.org/10.3389/fmars.2023.1096222}{Revisiting the
+footprints of climate change in arctic marine food webs: An assessment
+of knowledge gained since 2010}. \emph{Frontiers in Marine Science}
+\textbf{10}, (2023).}
+
+\bibitem[\citeproctext]{ref-ramirezllodra2024}
+\CSLLeftMargin{5. }%
+\CSLRightInline{Ramirez-Llodra, E. \emph{et al.}
+\href{https://doi.org/10.1525/elementa.2023.00140}{The emerging picture
+of a diverse deep arctic ocean seafloor: From habitats to ecosystems}.
+\emph{Elementa-Science of the Anthropocene} \textbf{12}, (2024).}
+
+\bibitem[\citeproctext]{ref-michner2015}
+\CSLLeftMargin{6. }%
+\CSLRightInline{Michener, W. K.
+\href{https://doi.org/10.1016/j.ecoinf.2015.06.010}{Ecological data
+sharing}. \emph{Ecological Informatics} \textbf{29}, 33--44 (2015).}
+
+\bibitem[\citeproctext]{ref-caff2017}
+\CSLLeftMargin{7. }%
+\CSLRightInline{CAFF. \emph{State of the Arctic Marine Biodiversity
+Report}. \url{http://hdl.handle.net/11374/1945} (2017).}
+
+\bibitem[\citeproctext]{ref-kedra2015}
+\CSLLeftMargin{8. }%
+\CSLRightInline{Kędra, M. \emph{et al.}
+\href{https://doi.org/10.3402/polar.v34.23775}{Status and trends in the
+structure of arctic benthic food webs}. \emph{Polar Research}
+\textbf{34}, 23775 (2015).}
+
+\bibitem[\citeproctext]{ref-sirenko2001}
+\CSLLeftMargin{9. }%
+\CSLRightInline{Sirenko, B. \emph{et al.} \emph{List of Species of
+Free-Living Invertebrates of Eurasian Arctic Seas and Adjacent Deep
+Waters}. (2021).}
+
+\bibitem[\citeproctext]{ref-kraan2010}
+\CSLLeftMargin{10. }%
+\CSLRightInline{Kraan, C., Aarts, G., Meer, J. van der \& Piersma, T.
+\href{https://doi.org/Doi\%2010.1890/09-2040.1}{The role of
+environmental variables in structuring landscape-scale species
+distributions in seafloor habitats}. \emph{Ecology} \textbf{91},
+1583--1590 (2010).}
+
+\bibitem[\citeproctext]{ref-kraan2015}
+\CSLLeftMargin{11. }%
+\CSLRightInline{Kraan, C., Dormann, C. F., Greenfield, B. L. \& Thrush,
+S. F.
+\href{https://doi.org/ARTN\%20e0142411\%0A10.1371/journal.pone.0142411}{Cross-scale
+variation in biodiversity-environment links illustrated by coastal
+sandflat communities}. \emph{Plos One} \textbf{10}, (2015).}
+
+\bibitem[\citeproctext]{ref-mauffrey2021}
+\CSLLeftMargin{12. }%
+\CSLRightInline{Mauffrey, F. \emph{et al.}
+\href{https://doi.org/10.1111/mec.15698}{Benthic monitoring of oil and
+gas offshore platforms in the north sea using environmental DNA
+metabarcoding}. \emph{Molecular Ecology} \textbf{30}, 3007--3022
+(2021).}
+
+\bibitem[\citeproctext]{ref-chen2024}
+\CSLLeftMargin{13. }%
+\CSLRightInline{Chen, Z. \emph{et al.}
+\href{https://doi.org/10.1016/j.scitotenv.2024.172536}{Oil and gas
+platforms degrade benthic invertebrate diversity and food web
+structure}. \emph{Science of The Total Environment} \textbf{929}, 172536
+(2024).}
+
+\bibitem[\citeproctext]{ref-leng2024}
+\CSLLeftMargin{14. }%
+\CSLRightInline{Leng, Q., Mohamat-Yusuff, F., Mohamed, K. N., Zainordin,
+N. S. \& Hassan, M. Z.
+\href{https://doi.org/10.3389/fmars.2024.1465289}{Impacts of thermal and
+cold discharge from power plants on marine benthos and its mitigation
+measures: A systematic review}. \emph{Frontiers in Marine Science}
+\textbf{Volume 11 - 2024}, (2024).}
+
+\bibitem[\citeproctext]{ref-bluhm2011}
+\CSLLeftMargin{15. }%
+\CSLRightInline{Bluhm, B. A. \emph{et al.}
+\href{https://doi.org/10.1007/s12526-010-0078-4}{Diversity of the arctic
+deep-sea benthos}. \emph{Marine Biodiversity} \textbf{41}, 87--107
+(2011).}
+
+\bibitem[\citeproctext]{ref-piepenburg2011}
+\CSLLeftMargin{16. }%
+\CSLRightInline{Piepenburg, D. \emph{et al.}
+\href{https://doi.org/10.1007/s12526-010-0059-7}{Towards a pan-arctic
+inventory of the species diversity of the macro- and megabenthic fauna
+of the arctic shelf seas}. \emph{Marine Biodiversity} \textbf{41},
+51--70 (2011).}
+
+\bibitem[\citeproctext]{ref-piepenburg2024}
+\CSLLeftMargin{17. }%
+\CSLRightInline{Piepenburg, D. \emph{et al.}
+\href{https://doi.org/10.5194/essd-16-1177-2024}{PANABIO: A
+point-referenced PAN-arctic data collection of benthic BIOtas}.
+\emph{Earth System Science Data} \textbf{16}, 1177--1184 (2024).}
+
+\bibitem[\citeproctext]{ref-gbif2026}
+\CSLLeftMargin{18. }%
+\CSLRightInline{GBIF.org. \href{https://www.gbif.org}{GBIF home page}.
+vol. 2026 (2026).}
+
+\bibitem[\citeproctext]{ref-obis2026}
+\CSLLeftMargin{19. }%
+\CSLRightInline{OBIS. \href{https://obis.org}{Ocean biodiversity
+information system}. vol. 2026 (2026).}
+
+\bibitem[\citeproctext]{ref-teschke2022}
+\CSLLeftMargin{20. }%
+\CSLRightInline{Teschke, K. \emph{et al.}
+\href{https://doi.org/10.1038/s41597-022-01590-1}{CRITTERBASE, a
+science-driven data warehouse for marine biota}. \emph{Scientific Data}
+\textbf{9}, (2022).}
+
+\bibitem[\citeproctext]{ref-ogsl2026}
+\CSLLeftMargin{21. }%
+\CSLRightInline{OGSL. \href{https://slgo.ca}{Observatoire global du
+saint-laurent}. vol. 2026 (2026).}
+
+\bibitem[\citeproctext]{ref-pame2013}
+\CSLLeftMargin{22. }%
+\CSLRightInline{PAME. \emph{Large Marine Ecosystems (LMEs) of the Arctic
+Area - Revision of the Arctic LME Map}.
+\url{http://hdl.handle.net/11374/61} (2013).}
+
+\bibitem[\citeproctext]{ref-pamend}
+\CSLLeftMargin{23. }%
+\CSLRightInline{PAME.
+\href{https://pame.is/ourwork/ecosystem-approach-to-management-ea/large-marine-ecosystems/}{Large
+marine ecosystems}. vol. 2025.}
+
+\bibitem[\citeproctext]{ref-rgbif2026}
+\CSLLeftMargin{24. }%
+\CSLRightInline{Chamberlain, S. \emph{et al.}
+\href{https://CRAN.R-project.org/package=rgbif}{Rgbif: Interface to the
+global biodiversity information facility API}. (2026).}
+
+\bibitem[\citeproctext]{ref-robis2022}
+\CSLLeftMargin{25. }%
+\CSLRightInline{Provoost, P. \& Bosch, S.
+\href{https://CRAN.R-project.org/package=robis}{Robis: Ocean
+biodiversity information system (OBIS) client}. (2022).}
+
+\bibitem[\citeproctext]{ref-archambault2026}
+\CSLLeftMargin{26. }%
+\CSLRightInline{Archambault, P. (2026).}
+
+\bibitem[\citeproctext]{ref-wormsen}
+\CSLLeftMargin{27. }%
+\CSLRightInline{Dekeyzer, S.
+\href{https://www.marinespecies.org/news.php?p=show&id=9034}{Taxonomy
+and beyond: Ecological trait information in aphia and WoRMS}. vol. 2026
+(2022).}
+
+\bibitem[\citeproctext]{ref-wormsfu}
+\CSLLeftMargin{28. }%
+\CSLRightInline{WoRMS.
+\href{https://marinespecies.org/traits/aphia.php?p=stats_attributes}{Traits
+statistics}. vol. 2026 (n.d.).}
+
+\bibitem[\citeproctext]{ref-worrms}
+\CSLLeftMargin{29. }%
+\CSLRightInline{Chamberlain, S. \& Vanhoorne, B. Worrms: World register
+of marine species (WoRMS) client.
+\url{https://github.com/ropensci/worrms} (2026).}
+
+\bibitem[\citeproctext]{ref-gbif2021}
+\CSLLeftMargin{30. }%
+\CSLRightInline{Waller, J.
+\href{https://data-blog.gbif.org/post/gbif-filtering-guide/}{Common
+things to look out for when post-processing GBIF downloads}. (2021).}
+
+\bibitem[\citeproctext]{ref-parquet2022}
+\CSLLeftMargin{31. }%
+\CSLRightInline{ApacheParquet.
+\href{https://parquet.apache.org/docs/overview/motivation/}{Motivation}.
+(2022).}
+
+\bibitem[\citeproctext]{ref-harris2014}
+\CSLLeftMargin{32. }%
+\CSLRightInline{Harris, P. T., Macmillan-Lawler, M., Rupp, J. \& Baker,
+E. K. \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Geomorphology
+of the oceans}. \emph{Marine Geology} \textbf{352}, 4--24 (2014).}
+
+\bibitem[\citeproctext]{ref-calvet2024}
+\CSLLeftMargin{33. }%
+\CSLRightInline{Calvet, N., Bluhm, B. A., Yoccoz, N. G. \& Altenburger,
+A. \href{https://doi.org/10.3389/fmars.2024.1421475}{Shifting
+invertebrate distributions in the barents sea since pre-1900}.
+\emph{Frontiers in Marine Science} \textbf{Volume 11 - 2024}, (2024).}
+
+\bibitem[\citeproctext]{ref-githubrep}
+\CSLLeftMargin{34. }%
+\CSLRightInline{Modin, H.
+\href{https://github.com/hanna-modin/arctic-benthic-biodiversity}{Arctic-benthic-biodiversity}.
+(2026).}
+
+\end{CSLReferences}
+
+
+
+
+\end{document}
