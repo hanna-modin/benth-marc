@@ -218,7 +218,7 @@ excluded_species <- c(
 # ------------------- Filter west based on taxa ------------------------------
 
 # Step 1: Load the OBIS dataset
-obis_data_west <- read_parquet("occurrences_west.parquet")
+obis_data_west <- read_parquet("OBIS/occurrences_west.parquet")
 # Step 2: Count the number of records before filtering
 records_before_west <- nrow(obis_data_west)
 cat("Number of records before filtering:", records_before_west, "\n")
@@ -235,12 +235,12 @@ filtered_obis_data_west <- obis_data_west %>%
 records_after_west <- nrow(filtered_obis_data_west)
 cat("Number of records after filtering:", records_after_west, "\n")
 # Step 5: Save the filtered dataset
-write_parquet(filtered_obis_data_west, "filtered_occurrences_west.parquet")
+write_parquet(filtered_obis_data_west, "OBIS/filtered_occurrences_west.parquet")
 
 # ------------------- Filter east based on taxa ------------------------------ 
 
 # Step 1: Load the OBIS dataset
-obis_data_east <- read_parquet("occurrences_east.parquet")
+obis_data_east <- read_parquet("OBIS/occurrences_east.parquet")
 # Step 2: Count the number of records before filtering
 records_before_east <- nrow(obis_data_east)
 cat("Number of records before filtering:", records_before_east, "\n")
@@ -257,14 +257,14 @@ filtered_obis_data_east <- obis_data_east %>%
 records_after_east <- nrow(filtered_obis_data_east)
 cat("Number of records after filtering:", records_after_east, "\n")
 # Step 5: Save the filtered dataset
-write_parquet(filtered_obis_data_east, "filtered_occurrences_east.parquet")
+write_parquet(filtered_obis_data_east, "OBIS/filtered_occurrences_east.parquet")
 
 
 # ---------------- Check columns and merge to one parquet file ------------------------------
 
 # Load the datasets
-occurrences_west <- read_parquet("filtered_occurrences_west.parquet")
-occurrences_east <- read_parquet("filtered_occurrences_east.parquet")
+occurrences_west <- read_parquet("OBIS/filtered_occurrences_west.parquet")
+occurrences_east <- read_parquet("OBIS/filtered_occurrences_east.parquet")
 # Check the columns in each dataset
 cat("Columns in filtered_occurrences_west:\n")
 print(colnames(occurrences_west))
@@ -347,7 +347,7 @@ datasets_merged <- dplyr::bind_rows(dataset_east_selected, dataset_west_selected
   dplyr::distinct(id, .keep_all = TRUE)
 
 # Keep only entries where id exists in merged_OBIS.parquet
-merged_obis_dataset_ids <- read_parquet("merged_OBIS.parquet") %>%
+merged_obis_dataset_ids <- read_parquet("OBIS/merged_OBIS.parquet") %>%
   dplyr::select(dataset_id) %>%
   dplyr::distinct() %>%
   dplyr::mutate(dataset_id = as.character(dataset_id)) %>%
@@ -358,8 +358,8 @@ datasets_merged <- datasets_merged %>%
   dplyr::semi_join(merged_obis_dataset_ids, by = "id")
 
 # Write merged dataset metadata to a Parquet file
-arrow::write_parquet(datasets_merged, "datasets_OBIS.parquet")
-cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'datasets_OBIS.parquet'.\n")
+arrow::write_parquet(datasets_merged, "OBIS/datasets_OBIS.parquet")
+cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'OBIS/datasets_OBIS.parquet'.\n")
 
 
 
