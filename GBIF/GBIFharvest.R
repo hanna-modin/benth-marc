@@ -2,7 +2,7 @@
 #install.packages("bit64")
 #install.packages("pak")
 #install.packages("rgbif")  # Comment this out to avoid overwriting the dev version
-pak::pkg_install("ropensci/rgbif") # dev version - uncomment to install/update
+# pak::pkg_install("ropensci/rgbif") # dev version - uncomment to install/update
 
 #install.packages("devtools")
 #devtools::install_github("ropensci/rgbif")  # Alternative: use this instead of pak if needed
@@ -237,7 +237,7 @@ repeat {
   # Print progress
   cat("Processed chunk", chunk_number, "\n")
 }
-}
+
 cat("Processing complete. Filtered data saved to", output_file, "\n")
 
 #//////////////////////////// MERGE FILTERED GBIF DATA INTO PARQUET ////////////////////////////
