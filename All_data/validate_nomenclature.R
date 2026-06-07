@@ -5,7 +5,7 @@ library(writexl)
 setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/All_data")
 
 # Read the CSV and extract the numeric AphiaID vector
-df <- read_csv("valid_aphiaID.csv", show_col_types = FALSE)
+df <- read_csv("update_aphiaID.csv", show_col_types = FALSE)
 
 ids <- unique(df$aphiaID)
 ids <- as.integer(ids)
@@ -91,5 +91,6 @@ results <- do.call(rbind, out_rows)
 results$AphiaID <- suppressWarnings(as.integer(as.character(results$AphiaID)))
 write.csv(results, output_csv, row.names = FALSE)
 message("Wrote ", nrow(results), " rows to ", output_csv)
-write_xlsx(results, "validated_nomenclature2.xlsx")
+write_xlsx(results, "validated_nomenclature4.xlsx")
 
+# Extract the vali

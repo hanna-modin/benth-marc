@@ -280,7 +280,7 @@ read_unique_aphia_ids_input <- function(path) {
 }
 
 default_ids <- c(124321, 100803)
-input_ids_csv <- file.path("unique_aphiaIDs.csv")
+input_ids_csv <- file.path("update_aphiaID.csv")
 
 input_taxa <- if (file.exists(input_ids_csv)) {
 	read_unique_aphia_ids_input(input_ids_csv)
