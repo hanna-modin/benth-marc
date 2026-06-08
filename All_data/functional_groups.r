@@ -280,7 +280,7 @@ read_unique_aphia_ids_input <- function(path) {
 }
 
 default_ids <- c(124321, 100803)
-input_ids_csv <- file.path("update_aphiaID.csv")
+input_ids_csv <- file.path("valid_aphiaIDs.csv")
 
 input_taxa <- if (file.exists(input_ids_csv)) {
 	read_unique_aphia_ids_input(input_ids_csv)
@@ -330,7 +330,7 @@ traits_data <- purrr::map_dfr(aphia_ids, function(id) {
 		error = function(e) NULL)
 	if (is.null(result)) tibble() else result
 }, .progress = TRUE)
-write_csv(traits_data, "taxonomic_filter_traits_data.csv")
+write_csv(traits_data, "traits_data.csv")
 
 ## Safe wrapper for attr def queries
 get_worms_attr_def_safe <- function(id, max_retries = 3, base_wait = 0.5) {
@@ -364,13 +364,13 @@ traits_definitions <- purrr::map_dfr(aphia_ids, function(id) {
 		error = function(e) NULL)
 	if (is.null(result)) tibble() else result
 }, .progress = TRUE)
-write_csv(traits_definitions, "taxonomic_filter_traits_definitions.csv")
+write_csv(traits_definitions, "traits_definitions.csv")
 
 all_stage_fg_results <- run_worms_fgrp_ids(
 	aphia_ids = aphia_ids,
 	chunk_size = 250,
 	pause_sec = 0.5,  # Increased from 0.02 to reduce rate-limit hits
-	checkpoint_path = "taxonomic_filter_functional_groups_checkpoint.csv",
+	checkpoint_path = "functional_groups_checkpoint.csv",
 	reset_checkpoint = TRUE,
 	resume_from_checkpoint = TRUE
 )
@@ -384,7 +384,7 @@ all_stage_fg_results <- all_stage_fg_results %>%
 		by = "AphiaID"
 	)
 
-taxonomic_filter_xlsx <- file.path("..", "functional_groups.xlsx")
+taxonomic_filter_xlsx <- file.path("functional_groups.xlsx")
 taxonomic_filter_sheet <- if (file.exists(taxonomic_filter_xlsx)) readxl::excel_sheets(taxonomic_filter_xlsx)[1] else "Sheet1"
 
 stage_cols <- c(
