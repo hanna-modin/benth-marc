@@ -2,7 +2,7 @@ library(worrms)
 library(readr)
 library(writexl)
 
-setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/All_data")
+setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/Validate_nomenclature")
 
 # Read the CSV and extract the numeric AphiaID vector
 df <- read_csv("update_aphiaID.csv", show_col_types = FALSE)

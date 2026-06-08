@@ -1,6 +1,6 @@
 #https://github.com/tomjwebb/WoRMS-functional-groups
 
-setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/All_data")
+setwd("C:/Users/hamod4691/Code/arctic-benthic-biodiversity/Functional_groups")
 
 library(worrms)
 library(readxl)
