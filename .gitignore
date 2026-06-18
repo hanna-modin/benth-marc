@@ -69,18 +69,10 @@ GEBCO/*.tiff
 # !important_file.csv
 
 # Do not ignore these files: 
-!excluded_taxa_with_ranks_manual.xlsx
-!taxa_need_filtering.xlsx
 !east.wkt
 !west.wkt
-!merged_dataset_with_keep_column.csv
-!P_gear_edited.csv
 !gbif_taxonkey_original.csv
-!columns_in_final.xlsx
 !original.xlsx
-!unique_bibliographic_citations_manual.csv
-!unique_stations_with_status_manual.csv
-!obligate_benthos.xlsx
 !unique_names_aphia_manual.xlsx
 !SQL_queries.txt
 !taxa_need_filtering_step_2_gbifid_manual.xlsx
@@ -98,3 +90,7 @@ GEBCO/*.tiff
 !unique_names_matched.xlsx
 !dataset_deduplication_manual.xlsx
 !workflow.xlsx
+!taxonomic_filter.xlsx
+!columns_in_final.xlsx
+!glossary.xlsx
+!statistics.xlsx
