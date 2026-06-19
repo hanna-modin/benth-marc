@@ -91,6 +91,6 @@ GEBCO/*.tiff
 !dataset_deduplication_manual.xlsx
 !workflow.xlsx
 !taxonomic_filter.xlsx
-!columns_in_final.xlsx
+!column_mapping.xlsx
 !glossary.xlsx
 !statistics.xlsx
