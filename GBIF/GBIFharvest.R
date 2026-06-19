@@ -15,6 +15,7 @@ library(rgbif)
 packageVersion("rgbif")  # Should show 3.8.5.1
 library(dplyr)
 library(data.table)
+library(arrow)
 
 Sys.setenv(
   GBIF_USER = "hannamodin",
@@ -325,6 +326,27 @@ extract_uuid_identifier <- function(node, ns = NULL) {
   })
 }
 
+# Function to extract DOI from the first alternateIdentifier that starts with 10.
+extract_doi_identifier <- function(node, ns = NULL) {
+  tryCatch({
+    alt_ids <- xml_find_all(node, ".//d1:alternateIdentifier", ns = ns)
+    if (length(alt_ids) == 0) {
+      # Try without namespace
+      alt_ids <- xml_find_all(node, ".//alternateIdentifier")
+    }
+
+    for (alt_id in alt_ids) {
+      text <- xml_text(alt_id)
+      if (grepl("^10\\.", text)) {
+        return(text)
+      }
+    }
+    return(NA_character_)
+  }, error = function(e) {
+    return(NA_character_)
+  })
+}
+
 # Loop through each XML file and extract data
 for (i in seq_along(xml_files)) {
   tryCatch({
@@ -369,6 +391,9 @@ for (i in seq_along(xml_files)) {
     
     # Extract alternateIdentifier (UUID format)
     alternate_id <- extract_uuid_identifier(xml_doc, ns = ns)
+
+    # Extract DOI from the first alternateIdentifier starting with 10.
+    doi <- extract_doi_identifier(xml_doc, ns = ns)
     
     # Extract pubDate
     pub_date <- extract_text(xml_doc, ".//d1:pubDate", ns = ns)
@@ -390,6 +415,7 @@ for (i in seq_along(xml_files)) {
       url = url,
       citation = citation,
       alternateIdentifier = alternate_id,
+      doi = doi,
       pubDate = pub_date,
       licenseName = license_name,
       stringsAsFactors = FALSE
@@ -478,6 +504,9 @@ for (i in seq_along(xml_files_west)) {
     
     # Extract alternateIdentifier (UUID format)
     alternate_id <- extract_uuid_identifier(xml_doc, ns = ns)
+
+    # Extract DOI from the first alternateIdentifier starting with 10.
+    doi <- extract_doi_identifier(xml_doc, ns = ns)
     
     # Extract pubDate
     pub_date <- extract_text(xml_doc, ".//d1:pubDate", ns = ns)
@@ -499,6 +528,7 @@ for (i in seq_along(xml_files_west)) {
       url = url,
       citation = citation,
       alternateIdentifier = alternate_id,
+      doi = doi,
       pubDate = pub_date,
       licenseName = license_name,
       stringsAsFactors = FALSE

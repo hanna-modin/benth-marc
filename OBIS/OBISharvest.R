@@ -333,11 +333,39 @@ cat("Filtered MoF data saved to 'mof_OBIS.parquet'\n")
 
 # ---------------------- Merge datasets ---------------------------
 
+# Extract the organization name for publisher contacts from each dataset row.
+extract_publisher <- function(contacts) {
+  if (!is.data.frame(contacts) || !all(c("role", "organization") %in% names(contacts))) {
+    return(NA_character_)
+  }
+
+  publisher_roles <- contacts[["role"]]
+  publisher_organizations <- contacts[["organization"]]
+
+  publisher_orgs <- unique(publisher_organizations[
+    !is.na(publisher_roles) &
+      publisher_roles == "publisher" &
+      !is.na(publisher_organizations) &
+      publisher_organizations != ""
+  ])
+
+  if (length(publisher_orgs) == 0) {
+    NA_character_
+  } else {
+    paste(publisher_orgs, collapse = "; ")
+  }
+}
+
 # Read and extract selected fields from both dataset JSON files
 dataset_east_json <- jsonlite::fromJSON("dataset_east.json")
 dataset_west_json <- jsonlite::fromJSON("dataset_west.json")
 
-selected_fields <- c("id", "url", "published", "title", "abstract", "intellectualrights", "citation")
+dataset_east_json <- dataset_east_json %>%
+  dplyr::mutate(publisher = vapply(contacts, extract_publisher, character(1)))
+dataset_west_json <- dataset_west_json %>%
+  dplyr::mutate(publisher = vapply(contacts, extract_publisher, character(1)))
+
+selected_fields <- c("id", "url", "published", "title", "abstract", "intellectualrights", "citation", "publisher")
 
 dataset_east_selected <- dplyr::select(dataset_east_json, dplyr::any_of(selected_fields))
 dataset_west_selected <- dplyr::select(dataset_west_json, dplyr::any_of(selected_fields))
@@ -347,7 +375,7 @@ datasets_merged <- dplyr::bind_rows(dataset_east_selected, dataset_west_selected
   dplyr::distinct(id, .keep_all = TRUE)
 
 # Keep only entries where id exists in merged_OBIS.parquet
-merged_obis_dataset_ids <- read_parquet("OBIS/merged_OBIS.parquet") %>%
+merged_obis_dataset_ids <- read_parquet("merged_OBIS.parquet") %>%
   dplyr::select(dataset_id) %>%
   dplyr::distinct() %>%
   dplyr::mutate(dataset_id = as.character(dataset_id)) %>%
@@ -358,8 +386,8 @@ datasets_merged <- datasets_merged %>%
   dplyr::semi_join(merged_obis_dataset_ids, by = "id")
 
 # Write merged dataset metadata to a Parquet file
-arrow::write_parquet(datasets_merged, "OBIS/datasets_OBIS.parquet")
-cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'OBIS/datasets_OBIS.parquet'.\n")
+arrow::write_parquet(datasets_merged, "datasets_OBIS.parquet")
+cat("Merged dataset metadata filtered by merged_OBIS.parquet ids and saved to 'datasets_OBIS.parquet'.\n")
 
 
 
