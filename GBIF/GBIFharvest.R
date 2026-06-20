@@ -409,6 +409,7 @@ for (i in seq_along(xml_files)) {
     
     # Add to list
     datasets_list[[i]] <- data.frame(
+      datasetKey = tools::file_path_sans_ext(basename(xml_files[i])),
       title = title,
       abstract = abstract,
       intellectualRights = intellectual_rights,
@@ -522,6 +523,7 @@ for (i in seq_along(xml_files_west)) {
     
     # Add to list
     datasets_list_west[[i]] <- data.frame(
+      datasetKey = tools::file_path_sans_ext(basename(xml_files_west[i])),
       title = title,
       abstract = abstract,
       intellectualRights = intellectual_rights,
@@ -581,15 +583,15 @@ cat("West metadata has", nrow(west_metadata), "entries\n")
 # Merge the two metadata files first
 merged_metadata <- bind_rows(east_metadata, west_metadata)
 
-# Filter merged metadata to keep only entries with UUIDs that exist in the occurrence data
+# Filter merged metadata to keep only entries whose XML filename matches an occurrence datasetKey
 merged_metadata <- merged_metadata %>%
-  filter(!is.na(alternateIdentifier) & alternateIdentifier %in% unique_datasets)
+  filter(datasetKey %in% unique_datasets)
 
 cat("Merged metadata filtered to", nrow(merged_metadata), "entries\n")
 
-# Remove duplicate UUIDs (keep first occurrence)
+# Remove duplicate dataset keys (keep first occurrence)
 merged_metadata <- merged_metadata %>%
-  distinct(alternateIdentifier, .keep_all = TRUE)
+  distinct(datasetKey, .keep_all = TRUE)
 
 cat("Merged metadata has", nrow(merged_metadata), "unique entries\n")
 
