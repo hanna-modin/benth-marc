@@ -1,4 +1,4 @@
-# BENTH-MARC: Georeferenced zoobenthic biodiversity data from the marine Arctic (data paper submitted to Scientific Data 2026-06-21)
+# BENTH-MARC: Georeferenced zoobenthic biodiversity data from the marine Arctic 
 
 # Authors 
 Hanna Modin^1, Jannik Schnier^2, Jennifer Dannheim^2, Paul Renaud^3, Raul Primicerio^1, Mikael Sejr^4, Camille Poitrimol^5, Cindy Grant^5, Lisa Treau De Coeli^5, Philippe Archambault^5, Bodil Bluhm^1. 
