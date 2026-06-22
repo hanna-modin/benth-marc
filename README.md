@@ -1,15 +1,15 @@
 # BENTH-MARC: Georeferenced zoobenthic biodiversity data from the marine Arctic 
 
 # Authors 
-Hanna Modin^1, Jannik Schnier^2, Jennifer Dannheim^2, Paul Renaud^3, Raul Primicerio^1, Mikael Sejr^4, Camille Poitrimol^5, Cindy Grant^5, Lisa Treau De Coeli^5, Philippe Archambault^5, Bodil Bluhm^1. 
+Hanna Modin^1^, Jannik Schnier^2^, Jennifer Dannheim^2^, Paul Renaud^3^, Raul Primicerio^1^, Mikael Sejr^4^, Camille Poitrimol^5^, Cindy Grant^5^, Lisa Treau De Coeli^5^, Philippe Archambault^5^, Bodil Bluhm^1^. 
 
-^1 The Arctic University of Norway, Tromsø, 9037, Norway  
-^2 Alfred Wegener Institute, Bremerhaven, 27570, Germany  
-^3 Akvaplan-niva, Tromsø, 9296, Norway  
-^4 Aarhus University, Aarhus, 8000, Denmark  
-^5 Université Laval, Québec, G1V 0A6, Canada  
+^1^The Arctic University of Norway, Tromsø, 9037, Norway  
+^2^Alfred Wegener Institute, Bremerhaven, 27570, Germany  
+^3^Akvaplan-niva, Tromsø, 9296, Norway  
+^4^Aarhus University, Aarhus, 8000, Denmark  
+^5^Université Laval, Québec, G1V 0A6, Canada  
 
-Correspondence to: Hanna Modin (hanna.m.modin@uit.no)
+*Correspondence to:* Hanna Modin (hanna.m.modin@uit.no)
 
 # Abstract 
 As the Arctic Ocean undergoes rapid environmental change and is subjected to increasing anthropogenic pressures, there is a growing need for comprehensive baseline data on its biodiversity. Although sampling efforts have been considerable over the past decades, the existing biodiversity records are often fragmented and scattered across multiple databases. We present BENTH-MARC, an open pan-Arctic database with BENTHos in the Marine ARCtic. BENTH-MARC contains 2,812,548 georeferenced zoobenthic taxon records of 8,331 species and 3,285 taxa at other taxonomic levels from 684 datasets and 210,867 stations. Data span across the entire pan-Arctic realm and integrate regional and global biodiversity databases as well as previously unpublished datasets. The records in BENTH-MARC come from two and a half centuries of sampling, from 1773-2026, and are based on morphological identification. By providing harmonized and accessible data, BENTH-MARC can support the assessment of biological consequences of ongoing environmental change, aid in the identification of biodiversity hotspots and evaluation of conservation targets. The database can also be used to guide future sampling efforts.
