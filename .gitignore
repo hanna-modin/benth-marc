@@ -58,11 +58,11 @@ __pycache__/
 Thumbs.db
 
 # Data directories with large files
-GBIF/occ_parquet_shards_*/
 GBIF/east_data/
 GBIF/west_data/
 GEBCO/*.tif
 GEBCO/*.tiff
+AU/
 
 # Keep these files (negation - add specific files you DO want to track)
 # Uncomment and modify as needed:
@@ -71,20 +71,14 @@ GEBCO/*.tiff
 # Do not ignore these files: 
 !east.wkt
 !west.wkt
-!gbif_taxonkey_original.csv
 !original.xlsx
 !unique_names_aphia_manual.xlsx
 !SQL_queries.txt
-!taxa_need_filtering_step_2_gbifid_manual.xlsx
 !arctic-benthic-biodiversity.code-workspace
 !datasets_GBIF_OBIS_manual.xlsx
-!column_data_types.xlsx
 !validated_nomenclature_manual.xlsx
 !gbif_missing_aphiaID_manual.xlsx
-!functional_groups.xlsx
-!validated_nomenclature_manual_filtered.xlsx
-!validated_nomenclature_final.xlsx
-!final_nomenclature.xlsx
+!functional_groups_manual.xlsx
 !unique_stations_manual.csv
 !gear_types_manual.xlsx
 !unique_names_matched.xlsx
@@ -94,3 +88,5 @@ GEBCO/*.tiff
 !column_mapping.xlsx
 !glossary.xlsx
 !statistics.xlsx
+!gbif_missing_aphiaID.xlsx
+!dataset_deduplication_manual.xlsx
