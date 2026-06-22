@@ -1,13 +1,13 @@
 # BENTH-MARC: Georeferenced zoobenthic biodiversity data from the marine Arctic 
 
 # Authors 
-Hanna Modin^1^, Jannik Schnier^2^, Jennifer Dannheim^2^, Paul Renaud^3^, Raul Primicerio^1^, Mikael Sejr^4^, Camille Poitrimol^5^, Cindy Grant^5^, Lisa Treau De Coeli^5^, Philippe Archambault^5^, Bodil Bluhm^1^. 
+Hanna Modin<sup>1</sup>, Jannik Schnier<sup>2</sup>, Jennifer Dannheim<sup>2</sup>, Paul Renaud<sup>3</sup>, Raul Primicerio<sup>1</sup>, Mikael Sejr<sup>4</sup>, Camille Poitrimol<sup>5</sup>, Cindy Grant<sup>5</sup>, Lisa Treau De Coeli<sup>5</sup>, Philippe Archambault<sup>5</sup>, Bodil Bluhm<sup>1</sup>.
 
-^1^The Arctic University of Norway, Tromsø, 9037, Norway  
-^2^Alfred Wegener Institute, Bremerhaven, 27570, Germany  
-^3^Akvaplan-niva, Tromsø, 9296, Norway  
-^4^Aarhus University, Aarhus, 8000, Denmark  
-^5^Université Laval, Québec, G1V 0A6, Canada  
+<sup>1</sup> The Arctic University of Norway, Tromsø, 9037, Norway  
+<sup>2</sup> Alfred Wegener Institute, Bremerhaven, 27570, Germany  
+<sup>3</sup> Akvaplan-niva, Tromsø, 9296, Norway  
+<sup>4</sup> Aarhus University, Aarhus, 8000, Denmark  
+<sup>5</sup> Université Laval, Québec, G1V 0A6, Canada
 
 *Correspondence to:* Hanna Modin (hanna.m.modin@uit.no)
 
